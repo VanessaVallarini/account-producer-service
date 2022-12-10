@@ -1,7 +1,7 @@
 package main
 
 import (
-	api "account-producer-service/api"
+	"account-producer-service/api"
 	"account-producer-service/cmd/account-producer-service/health"
 	"account-producer-service/cmd/account-producer-service/server"
 	"account-producer-service/internal/config"
