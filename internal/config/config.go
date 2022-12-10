@@ -24,7 +24,7 @@ func initConfig() *viper.Viper {
 	config := viper.New()
 
 	config.SetConfigType("yml")
-	config.SetConfigName("configuration")
+	config.SetConfigName("configuration_producer")
 	config.AddConfigPath("internal/config/")
 
 	err := config.ReadInConfig()
@@ -49,14 +49,12 @@ func buildKafkaClientConfig(config *viper.Viper) *models.KafkaConfig {
 		SaslMechanism:          config.GetString("KAFKA_SASL_MECHANISM"),
 		User:                   config.GetString("KAFKA_USER"),
 		Password:               config.GetString("KAFKA_PASSWORD"),
-		SchemaRegistryUser:     config.GetString("KAFKA_SCHEMA_REGISTRY_USER"),
+		SchemaRegistryUser:     config.GetString("KAFKA_SCHEMA_REGISTRYR"),
 		SchemaRegistryPassword: config.GetString("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
 		EnableEvents:           config.GetBool("KAFKA_ENABLE_EVENTS"),
-		MaxMessageBytes:        config.GetInt("KAFKA_MAX_MESSAGE_BYTES"),
+		MaxMessageBytes:        config.GetInt("KAFKA_MAX_MESSAGE_BYTESR"),
 		RetryMax:               config.GetInt("KAFKA_RETRY_MAX"),
-		DlqTopic:               config.GetString("KAFKA_DLQ_TOPIC"),
 		ConsumerTopic:          config.GetString("KAFKA_CONSUMER_TOPIC"),
-		ConsumerGroup:          config.GetString("KAFKA_CONSUMER_GROUP"),
 	}
 }
 
