@@ -24,7 +24,7 @@ func initConfig() *viper.Viper {
 	config := viper.New()
 
 	config.SetConfigType("yml")
-	config.SetConfigName("configuration_producer")
+	config.SetConfigName("configuration")
 	config.AddConfigPath("internal/config/")
 
 	err := config.ReadInConfig()
