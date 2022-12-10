@@ -48,7 +48,3 @@ Service responsible for account management, integration with partners, such as V
 - `Run the project and create an account again`
 - `View messages sent to Kafka`
     - Access the control center in docker compose -> select the cluster -> select the topic (account_create) -> select the messages -> insert 0 in partition -> Enter
-
-
-
-
