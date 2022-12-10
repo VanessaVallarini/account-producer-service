@@ -25,8 +25,15 @@ Service responsible for account management, integration with partners, such as V
 ## Running
 - `Docker`
     - Run the following command: docker-compose -f local-dev/docker-compose.yaml --profile infra up -d
+- `Create subject kafka`
+    - Create subject
+    curl --location --request POST 'http://localhost:8081/subjects/com.account.create/versions' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "schema": "{\"type\":\"record\",\"name\":\"Account_Create\",\"namespace\":\"com.account.create\",\"fields\":[{\"name\":\"alias\",\"type\":\"string\"},{\"name\":\"city\",\"type\":\"string\"},{\"name\":\"district\",\"type\":\"string\"},{\"name\":\"email\",\"type\":\"string\"},{\"name\":\"full_number\",\"type\":\"string\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"public_place\",\"type\":\"string\"},{\"name\":\"zip_code\",\"type\":\"string\"}]}"
+    }'
 - `Run the project`
-    - Just to create the topics: run -> start debugging -> to allow -> perform account creation via Postman -> stop
+    - Run -> start debugging -> to allow -> perform account creation via Postman -> stop
     curl --location --request POST 'http://localhost:1002/v1/accounts' \
     --header 'Content-Type: application/json' \
     --data-raw '{
@@ -35,17 +42,6 @@ Service responsible for account management, integration with partners, such as V
         "name": "Van",
         "zip_code": "01001-000"  
     }'
-- `Create kafka schema`
-    - Copy the AccountCreateAvro value available at account-producer-service/internal/models/schema.go
-    - Format it in https://jsonformatter.curiousconcept.com/#
-    - Access the control center in docker compose -> select the cluster -> select the topic (account_create) -> select the schema -> paste the generated value in jsonformatter
-    - Create subject
-    curl --location --request POST 'http://localhost:8081/subjects/com.account.create/versions' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-        "schema": "{\"type\":\"record\",\"name\":\"Account_Create\",\"namespace\":\"com.account.create\",\"fields\":[{\"name\":\"alias\",\"type\":\"string\"},{\"name\":\"city\",\"type\":\"string\"},{\"name\":\"district\",\"type\":\"string\"},{\"name\":\"email\",\"type\":\"string\"},{\"name\":\"full_number\",\"type\":\"string\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"public_place\",\"type\":\"string\"},{\"name\":\"zip_code\",\"type\":\"string\"}]}"
-    }'
-- `Run the project and create an account again`
 - `View messages sent to Kafka`
     - Access the control center in docker compose -> select the cluster -> select the topic (account_create) -> select the messages -> insert 0 in partition -> Enter
 
