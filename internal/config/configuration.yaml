@@ -17,7 +17,7 @@ KAFKA_SCHEMA_REGISTRY_PASSWORD: ""
 KAFKA_ENABLE_EVENTS: true
 KAFKA_MAX_MESSAGE_BYTES: 0
 KAFKA_RETRY_MAX: 0
-KAFKA_TOPIC: "account_create"
+KAFKA_TOPIC: "account_create, account_update"
 
 VIA_CEP_URL: "https://viacep.com.br/ws/"
 VIA_CEP_MAX_RETRIES_HTTP_REQUEST: 3

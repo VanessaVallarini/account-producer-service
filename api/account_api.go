@@ -7,10 +7,10 @@ import (
 )
 
 type AccountApi struct {
-	service *services.AccountServiceProducer
+	service *services.AccountService
 }
 
-func NewAccountApi(service *services.AccountServiceProducer) *AccountApi {
+func NewAccountApi(service *services.AccountService) *AccountApi {
 	return &AccountApi{
 		service: service,
 	}
@@ -19,4 +19,5 @@ func NewAccountApi(service *services.AccountServiceProducer) *AccountApi {
 func (c *AccountApi) Register(router *echo.Echo) {
 	v1 := router.Group("/v1")
 	v1.POST("/accounts", c.createAccount)
+	v1.PATCH("/accounts/:id", c.updateAccount)
 }

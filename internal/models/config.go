@@ -25,7 +25,7 @@ type KafkaConfig struct {
 	MaxMessageBytes        int
 	RetryMax               int
 	DlqTopic               string
-	ConsumerTopic          string
+	Topic                  []string
 	ConsumerGroup          string
 }
 

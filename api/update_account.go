@@ -10,26 +10,29 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (api *AccountApi) createAccount(echoContext echo.Context) error {
+func (api *AccountApi) updateAccount(echoContext echo.Context) error {
 	ctx := echoContext.Request().Context()
 	validate := validator.New()
 
-	var createAccountRequest models.AccountCreateRequest
+	var updateAccountRequest models.AccountUpdateRequest
 
-	err := echoContext.Bind(&createAccountRequest)
+	id := echoContext.Param("id")
+	updateAccountRequest.Id = id
+
+	err := echoContext.Bind(&updateAccountRequest)
 	if err != nil {
 		utils.Logger.Error("error on binding info: %v", err)
 		errorxErr := errorx.IllegalArgument.New(err.Error())
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}
 
-	err = validate.Struct(&createAccountRequest)
+	err = validate.Struct(&updateAccountRequest)
 	if err != nil {
 		errorxErr := errorx.IllegalArgument.New(err.Error())
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}
 
-	err = api.service.Create(ctx, createAccountRequest)
+	err = api.service.Update(ctx, updateAccountRequest)
 	if err != nil {
 		errorxErr := errorx.RejectedOperation.New(err.Error())
 		return utils.BuildErrorResponse(echoContext, errorxErr)

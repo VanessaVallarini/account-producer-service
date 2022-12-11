@@ -8,31 +8,34 @@ import (
 	"context"
 )
 
-const topic = "account_create"
+const (
+	topic_create = "account_create"
+	topic_update = "account_update"
+)
 
-type IAccountServiceProducer interface {
+type IAccountService interface {
 	Create(ctx context.Context, ae models.AccountCreateRequest) error
 }
 
-type AccountServiceProducer struct {
+type AccountService struct {
 	producer kafka.IProducer
 	viaCep   clients.ViaCepApiClient
 }
 
-func NewAccountServiceProducer(p kafka.IProducer, v clients.ViaCepApiClient) *AccountServiceProducer {
-	return &AccountServiceProducer{
+func NewAccountService(p kafka.IProducer, v clients.ViaCepApiClient) *AccountService {
+	return &AccountService{
 		producer: p,
 		viaCep:   v,
 	}
 }
 
-func (asp *AccountServiceProducer) Create(ctx context.Context, ae models.AccountCreateRequest) error {
+func (service *AccountService) Create(ctx context.Context, ae models.AccountCreateRequest) error {
 
 	viaCepRequest := models.ViaCepRequest{
 		Cep: ae.ZipCode,
 	}
 
-	viaCepResponse, err := asp.viaCep.CallViaCepApi(ctx, viaCepRequest)
+	viaCepResponse, err := service.viaCep.CallViaCepApi(ctx, viaCepRequest)
 	if err != nil {
 		utils.Logger.Error("error during call via cep api", err)
 		return err
@@ -49,6 +52,34 @@ func (asp *AccountServiceProducer) Create(ctx context.Context, ae models.Account
 		ZipCode:     ae.ZipCode,
 	}
 
-	asp.producer.Send(aCreate, topic, models.AccountCreateSubject)
+	service.producer.Send(aCreate, topic_create, models.AccountCreateSubject)
+	return nil
+}
+
+func (asp *AccountService) Update(ctx context.Context, ae models.AccountUpdateRequest) error {
+
+	viaCepRequest := models.ViaCepRequest{
+		Cep: ae.ZipCode,
+	}
+
+	viaCepResponse, err := asp.viaCep.CallViaCepApi(ctx, viaCepRequest)
+	if err != nil {
+		utils.Logger.Error("error during call via cep api", err)
+		return err
+	}
+
+	aUpdate := models.AccountUpdateEvent{
+		Id:          ae.Id,
+		Alias:       viaCepResponse.Uf,
+		City:        viaCepResponse.Localidade,
+		District:    viaCepResponse.Bairro,
+		Email:       ae.Email,
+		FullNumber:  ae.FullNumber,
+		Name:        ae.Name,
+		PublicPlace: viaCepResponse.Logradouro,
+		ZipCode:     ae.ZipCode,
+	}
+
+	asp.producer.Send(aUpdate, topic_update, models.AccountUpdateSubject)
 	return nil
 }

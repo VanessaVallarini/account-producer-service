@@ -33,7 +33,7 @@ func main() {
 		utils.Logger.Warn("error during kafka producer")
 	}
 
-	accountServiceProducer := services.NewAccountServiceProducer(*kafkaProducer, *viaCepApiClient)
+	accountServiceProducer := services.NewAccountService(*kafkaProducer, *viaCepApiClient)
 
 	go func() {
 		setupHttpServer(accountServiceProducer, config)
@@ -44,7 +44,7 @@ func main() {
 	health.NewHealthServer()
 }
 
-func setupHttpServer(asp *services.AccountServiceProducer, config *models.Config) *echo.Echo {
+func setupHttpServer(asp *services.AccountService, config *models.Config) *echo.Echo {
 
 	accountApi := api.NewAccountApi(asp)
 	s := server.NewServer()
