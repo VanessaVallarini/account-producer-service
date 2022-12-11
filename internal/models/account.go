@@ -14,3 +14,7 @@ type AccountUpdateRequest struct {
 	Name       string `json:"name" validate:"required"`
 	ZipCode    string `json:"zip_code" validate:"required"`
 }
+
+type AccountDeleteRequest struct {
+	Id string `param:"id" validate:"required"`
+}

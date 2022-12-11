@@ -11,6 +11,7 @@ import (
 const (
 	topic_create = "account_create"
 	topic_update = "account_update"
+	topic_delete = "account_delete"
 )
 
 type IAccountService interface {
@@ -56,13 +57,13 @@ func (service *AccountService) Create(ctx context.Context, ae models.AccountCrea
 	return nil
 }
 
-func (asp *AccountService) Update(ctx context.Context, ae models.AccountUpdateRequest) error {
+func (service *AccountService) Update(ctx context.Context, ae models.AccountUpdateRequest) error {
 
 	viaCepRequest := models.ViaCepRequest{
 		Cep: ae.ZipCode,
 	}
 
-	viaCepResponse, err := asp.viaCep.CallViaCepApi(ctx, viaCepRequest)
+	viaCepResponse, err := service.viaCep.CallViaCepApi(ctx, viaCepRequest)
 	if err != nil {
 		utils.Logger.Error("error during call via cep api", err)
 		return err
@@ -80,6 +81,16 @@ func (asp *AccountService) Update(ctx context.Context, ae models.AccountUpdateRe
 		ZipCode:     ae.ZipCode,
 	}
 
-	asp.producer.Send(aUpdate, topic_update, models.AccountUpdateSubject)
+	service.producer.Send(aUpdate, topic_update, models.AccountUpdateSubject)
+	return nil
+}
+
+func (service *AccountService) Delete(ctx context.Context, ae models.AccountDeleteRequest) error {
+
+	aDelete := models.AccountDeleteEvent{
+		Id: ae.Id,
+	}
+
+	service.producer.Send(aDelete, topic_delete, models.AccountDeleteSubject)
 	return nil
 }

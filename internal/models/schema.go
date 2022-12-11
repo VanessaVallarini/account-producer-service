@@ -85,6 +85,18 @@ const (
 			 }		   
 		]
 	 }`
+	AccountDeleteSubject = "com.account.delete"
+	AccountDeleteAvro    = `{
+		"type":"record",
+		"name":"Account_Delete",
+		"namespace":"com.account.delete",
+		"fields":[
+			{
+				"name":"id",
+				"type":"string"
+			 }		   
+		]
+	 }`
 )
 
 type AccountCreateEvent struct {
@@ -108,4 +120,8 @@ type AccountUpdateEvent struct {
 	Name        string `json:"name" avro:"name"`
 	PublicPlace string `json:"public_place" avro:"public_place"`
 	ZipCode     string `json:"zip_code" avro:"zip_code"`
+}
+
+type AccountDeleteEvent struct {
+	Id string `json:"id" avro:"id"`
 }
