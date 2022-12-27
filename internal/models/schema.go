@@ -80,9 +80,13 @@ const (
 				"type":"string"
 			 },
 			 {
+				"name":"status",
+				"type":"string"
+			 },
+			 {
 				"name":"zip_code",
 				"type":"string"
-			 }		   
+			 }	   
 		]
 	 }`
 	AccountDeleteSubject = "com.account.delete"
@@ -94,7 +98,67 @@ const (
 			{
 				"name":"id",
 				"type":"string"
-			 }		   
+			},
+			{
+				"name":"email",
+				"type":"string"
+			},
+			{
+				"name":"full_number",
+				"type":"string"
+			}		   
+		]
+	 }`
+	AccountSubject = "com.account"
+	AccountAvro    = `{
+		"type":"record",
+		"name":"Account",
+		"namespace":"com.account",
+		"fields":[
+			{
+				"name":"id",
+				"type":"string"
+			 },
+			 {
+				"name":"alias",
+				"type":"string"
+			 },
+			 {
+				"name":"date_time",
+				"type":"string"
+			 },
+			 {
+				"name":"city",
+				"type":"string"
+			 },
+			 {
+				"name":"district",
+				"type":"string"
+			 },
+			 {
+				"name":"email",
+				"type":"string"
+			 },
+			 {
+				"name":"full_number",
+				"type":"string"
+			 },
+			 {
+				"name":"name",
+				"type":"string"
+			 },
+			 {
+				"name":"public_place",
+				"type":"string"
+			 },
+			 {
+				"name":"status",
+				"type":"string"
+			 },
+			 {
+				"name":"zip_code",
+				"type":"string"
+			 }
 		]
 	 }`
 )
@@ -119,9 +183,26 @@ type AccountUpdateEvent struct {
 	FullNumber  string `json:"full_number" avro:"full_number"`
 	Name        string `json:"name" avro:"name"`
 	PublicPlace string `json:"public_place" avro:"public_place"`
+	Status      string `json:"status" avro:"status"`
 	ZipCode     string `json:"zip_code" avro:"zip_code"`
 }
 
 type AccountDeleteEvent struct {
-	Id string `json:"id" avro:"id"`
+	Id         string `json:"id" avro:"id"`
+	Email      string `json:"email" avro:"email"`
+	FullNumber string `json:"full_number" avro:"full_number"`
+}
+
+type AccountEvent struct {
+	Id          string `json:"id" avro:"id"`
+	Alias       string `json:"alias" avro:"alias"`
+	DateTime    string `json:"date_time" avro:"date_time"`
+	City        string `json:"city" avro:"city"`
+	District    string `json:"district" avro:"district"`
+	Email       string `json:"email" avro:"email"`
+	FullNumber  string `json:"full_number" avro:"full_number"`
+	Name        string `json:"name" avro:"name"`
+	PublicPlace string `json:"public_place" avro:"public_place"`
+	Status      string `json:"status" avro:"status"`
+	ZipCode     string `json:"zip_code" avro:"zip_code"`
 }

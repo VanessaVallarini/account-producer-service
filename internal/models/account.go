@@ -13,8 +13,11 @@ type AccountUpdateRequest struct {
 	FullNumber string `json:"full_number" validate:"required"`
 	Name       string `json:"name" validate:"required"`
 	ZipCode    string `json:"zip_code" validate:"required"`
+	Status     string `json:"status" validate:"required"`
 }
 
 type AccountDeleteRequest struct {
-	Id string `param:"id" validate:"required"`
+	Id         string `param:"id" validate:"required"`
+	Email      string `json:"email" validate:"required,email"`
+	FullNumber string `json:"full_number" validate:"required"`
 }

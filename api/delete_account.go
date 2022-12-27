@@ -19,7 +19,14 @@ func (api *AccountApi) deleteAccount(echoContext echo.Context) error {
 	id := echoContext.Param("id")
 	deleteAccountRequest.Id = id
 
-	err := validate.Struct(&deleteAccountRequest)
+	err := echoContext.Bind(&deleteAccountRequest)
+	if err != nil {
+		utils.Logger.Error("error on binding info: %v", err)
+		errorxErr := errorx.IllegalArgument.New(err.Error())
+		return utils.BuildErrorResponse(echoContext, errorxErr)
+	}
+
+	err = validate.Struct(&deleteAccountRequest)
 	if err != nil {
 		errorxErr := errorx.IllegalArgument.New(err.Error())
 		return utils.BuildErrorResponse(echoContext, errorxErr)

@@ -79,6 +79,7 @@ func (service *AccountService) Update(ctx context.Context, ae models.AccountUpda
 		Name:        ae.Name,
 		PublicPlace: viaCepResponse.Logradouro,
 		ZipCode:     ae.ZipCode,
+		Status:      ae.Status,
 	}
 
 	service.producer.Send(aUpdate, topic_update, models.AccountUpdateSubject)
@@ -88,7 +89,9 @@ func (service *AccountService) Update(ctx context.Context, ae models.AccountUpda
 func (service *AccountService) Delete(ctx context.Context, ae models.AccountDeleteRequest) error {
 
 	aDelete := models.AccountDeleteEvent{
-		Id: ae.Id,
+		Id:         ae.Id,
+		Email:      ae.Email,
+		FullNumber: ae.FullNumber,
 	}
 
 	service.producer.Send(aDelete, topic_delete, models.AccountDeleteSubject)
