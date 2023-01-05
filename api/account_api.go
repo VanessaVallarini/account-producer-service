@@ -19,6 +19,5 @@ func NewAccountApi(service *services.AccountService) *AccountApi {
 func (c *AccountApi) Register(router *echo.Echo) {
 	v1 := router.Group("/v1")
 	v1.POST("/accounts", c.createAccount)
-	v1.PATCH("/accounts/:id", c.updateAccount)
-	v1.DELETE("/accounts/:id", c.deleteAccount)
+	v1.DELETE("/accounts/:email", c.deleteAccount)
 }

@@ -29,7 +29,7 @@ func (api *AccountApi) createAccount(echoContext echo.Context) error {
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}
 
-	err = api.service.Create(ctx, createAccountRequest)
+	err = api.service.CreateOrUpdateAccount(ctx, createAccountRequest)
 	if err != nil {
 		errorxErr := errorx.RejectedOperation.New(err.Error())
 		return utils.BuildErrorResponse(echoContext, errorxErr)

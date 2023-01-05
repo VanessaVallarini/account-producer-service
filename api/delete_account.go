@@ -16,8 +16,8 @@ func (api *AccountApi) deleteAccount(echoContext echo.Context) error {
 
 	var deleteAccountRequest models.AccountDeleteRequest
 
-	id := echoContext.Param("id")
-	deleteAccountRequest.Id = id
+	email := echoContext.Param("email")
+	deleteAccountRequest.Email = email
 
 	err := echoContext.Bind(&deleteAccountRequest)
 	if err != nil {

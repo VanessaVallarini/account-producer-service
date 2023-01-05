@@ -9,13 +9,20 @@ import (
 )
 
 const (
-	topic_create = "account_create"
-	topic_update = "account_update"
-	topic_delete = "account_delete"
+	topic_account_createorupdate_dlq = "account_createorupdate_dlq"
+	topic_account_delete_dlq         = "account_delete_dlq"
+	topic_account_get_dlq            = "account_get_dlq"
+	topic_account_get_response_dlq   = "account_get_response_dlq"
+	topic_account_createorupdate     = "account_createorupdate"
+	topic_account_delete             = "account_delete"
+	topic_account_get                = "account_get"
+	topic_account_get_response       = "account_get_response"
 )
 
 type IAccountService interface {
-	Create(ctx context.Context, ae models.AccountCreateRequest) error
+	CreateOrUpdateAccount(ctx context.Context, ae models.AccountCreateRequest) error
+	Delete(ctx context.Context, ae models.AccountDeleteRequest) error
+	GetByEmail(ctx context.Context, ade models.AccountGetRequest) (*models.Account, error)
 }
 
 type AccountService struct {
@@ -23,17 +30,17 @@ type AccountService struct {
 	viaCep   clients.ViaCepApiClient
 }
 
-func NewAccountService(p kafka.IProducer, v clients.ViaCepApiClient) *AccountService {
+func NewAccountService(kafkaProducer kafka.IProducer, viaCep clients.ViaCepApiClient) *AccountService {
 	return &AccountService{
-		producer: p,
-		viaCep:   v,
+		producer: kafkaProducer,
+		viaCep:   viaCep,
 	}
 }
 
-func (service *AccountService) Create(ctx context.Context, ae models.AccountCreateRequest) error {
+func (service *AccountService) CreateOrUpdateAccount(ctx context.Context, request models.AccountCreateRequest) error {
 
 	viaCepRequest := models.ViaCepRequest{
-		Cep: ae.ZipCode,
+		Cep: request.ZipCode,
 	}
 
 	viaCepResponse, err := service.viaCep.CallViaCepApi(ctx, viaCepRequest)
@@ -42,58 +49,30 @@ func (service *AccountService) Create(ctx context.Context, ae models.AccountCrea
 		return err
 	}
 
-	aCreate := models.AccountCreateEvent{
+	aCreate := models.AccountCreateOrUpdateEvent{
+		Email:       request.Email,
+		FullNumber:  request.FullNumber,
 		Alias:       viaCepResponse.Uf,
 		City:        viaCepResponse.Localidade,
 		District:    viaCepResponse.Bairro,
-		Email:       ae.Email,
-		FullNumber:  ae.FullNumber,
-		Name:        ae.Name,
+		Name:        request.Name,
 		PublicPlace: viaCepResponse.Logradouro,
-		ZipCode:     ae.ZipCode,
+		Status:      request.Status,
+		ZipCode:     request.ZipCode,
 	}
 
-	service.producer.Send(aCreate, topic_create, models.AccountCreateSubject)
+	service.producer.Send(aCreate, topic_account_createorupdate, models.AccountCreateOrUpdateSubject)
 	return nil
 }
 
-func (service *AccountService) Update(ctx context.Context, ae models.AccountUpdateRequest) error {
+func (service *AccountService) Delete(ctx context.Context, request models.AccountDeleteRequest) error {
+	service.producer.Send(request, topic_account_delete, models.AccountDeleteSubject)
 
-	viaCepRequest := models.ViaCepRequest{
-		Cep: ae.ZipCode,
-	}
-
-	viaCepResponse, err := service.viaCep.CallViaCepApi(ctx, viaCepRequest)
-	if err != nil {
-		utils.Logger.Error("error during call via cep api", err)
-		return err
-	}
-
-	aUpdate := models.AccountUpdateEvent{
-		Id:          ae.Id,
-		Alias:       viaCepResponse.Uf,
-		City:        viaCepResponse.Localidade,
-		District:    viaCepResponse.Bairro,
-		Email:       ae.Email,
-		FullNumber:  ae.FullNumber,
-		Name:        ae.Name,
-		PublicPlace: viaCepResponse.Logradouro,
-		ZipCode:     ae.ZipCode,
-		Status:      ae.Status,
-	}
-
-	service.producer.Send(aUpdate, topic_update, models.AccountUpdateSubject)
 	return nil
 }
 
-func (service *AccountService) Delete(ctx context.Context, ae models.AccountDeleteRequest) error {
+func (service *AccountService) GetByEmail(ctx context.Context, request models.AccountGetRequest) error {
 
-	aDelete := models.AccountDeleteEvent{
-		Id:         ae.Id,
-		Email:      ae.Email,
-		FullNumber: ae.FullNumber,
-	}
-
-	service.producer.Send(aDelete, topic_delete, models.AccountDeleteSubject)
+	service.producer.Send(request, topic_account_get, models.AccountGetSubject)
 	return nil
 }

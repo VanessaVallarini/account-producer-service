@@ -4,27 +4,27 @@ type AccountStatus int32
 
 const (
 	Active AccountStatus = iota
-	Inactive
+	Disabled
 )
 
-func (fs AccountStatus) String() string {
-	switch fs {
+func (as AccountStatus) String() string {
+	switch as {
 	case Active:
 		return "ACTIVE"
-	case Inactive:
-		return "INACTIVE"
+	case Disabled:
+		return "DESABLE"
 	}
 
-	return "INACTIVE"
+	return "DESABLE"
 }
 
-func FromString(name string) AccountStatus {
-	switch name {
+func AccountStatusString(status string) AccountStatus {
+	switch status {
 	case "ACTIVE":
 		return Active
-	case "INACTIVE":
-		return Inactive
+	case "DESABLE":
+		return Disabled
 	}
 
-	return Inactive
+	return Disabled
 }

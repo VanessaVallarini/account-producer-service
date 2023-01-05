@@ -1,17 +1,6 @@
 version: "3"
 
 services:
-  scylla-node:
-    image: scylladb/scylla:4.6.2
-    restart: always
-    command: --smp 1 --memory 250M --overprovisioned 1 --authenticator PasswordAuthenticator
-    volumes:
-      - ../build/package/docker/scylla/initial-load.sh:/initial-load.sh:Z
-      - ../build/package/docker/scylla/initial-load.conf:/etc/supervisord.conf.d/initial-load.conf:Z
-      - ../build/package/docker/scylla/cql:/home/cql:Z
-    ports:
-      - "9042:9042"
-
   zookeeper:
     image: confluentinc/cp-zookeeper:5.4.0
     hostname: zookeeper
