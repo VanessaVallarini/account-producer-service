@@ -3,6 +3,7 @@ package main
 import (
 	"account-producer-service/api"
 	"account-producer-service/cmd/account-producer-service/health"
+	"account-producer-service/cmd/account-producer-service/listner"
 	"account-producer-service/cmd/account-producer-service/server"
 	"account-producer-service/internal/config"
 	"account-producer-service/internal/models"
@@ -11,11 +12,14 @@ import (
 	"account-producer-service/internal/pkg/redis"
 	"account-producer-service/internal/pkg/services"
 	"account-producer-service/internal/pkg/utils"
+	"context"
 
 	"github.com/labstack/echo"
 )
 
 func main() {
+
+	ctx := context.Background()
 
 	config := config.NewConfig()
 
@@ -44,6 +48,8 @@ func main() {
 	}
 
 	accountServiceProducer := services.NewAccountService(*kafkaProducer, redisClient, *viaCepApiClient)
+
+	go listner.Start(ctx, config.Kafka, kafkaClient, redisClient)
 
 	go func() {
 		setupHttpServer(accountServiceProducer, config)
