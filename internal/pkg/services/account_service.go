@@ -4,8 +4,10 @@ import (
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/clients"
 	"account-producer-service/internal/pkg/kafka"
+	"account-producer-service/internal/pkg/redis"
 	"account-producer-service/internal/pkg/utils"
 	"context"
+	"encoding/json"
 )
 
 const (
@@ -28,12 +30,14 @@ type IAccountService interface {
 type AccountService struct {
 	producer kafka.IProducer
 	viaCep   clients.ViaCepApiClient
+	redis    redis.RedisClientInterface
 }
 
-func NewAccountService(kafkaProducer kafka.IProducer, viaCep clients.ViaCepApiClient) *AccountService {
+func NewAccountService(kafkaProducer kafka.IProducer, redisClient redis.RedisClientInterface, viaCep clients.ViaCepApiClient) *AccountService {
 	return &AccountService{
 		producer: kafkaProducer,
 		viaCep:   viaCep,
+		redis:    redisClient,
 	}
 }
 
@@ -71,8 +75,19 @@ func (service *AccountService) Delete(ctx context.Context, request models.Accoun
 	return nil
 }
 
-func (service *AccountService) GetByEmail(ctx context.Context, request models.AccountGetRequest) error {
-
+func (service *AccountService) GetByEmail(ctx context.Context, request models.AccountGetRequest) (*models.Account, error) {
 	service.producer.Send(request, topic_account_get, models.AccountGetSubject)
-	return nil
+
+	var account *models.Account
+	jsonAccount, err := service.redis.GetString(account.Email)
+	if err == nil && jsonAccount != "" {
+		if jsonErr := json.Unmarshal([]byte(jsonAccount), &account); jsonErr != nil {
+			utils.Logger.Errorf("error unmarshal context json from Redis: %v", jsonErr)
+			return nil, jsonErr
+		}
+		account.Email = account.Email
+		return account, nil
+	}
+
+	return nil, nil
 }

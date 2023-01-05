@@ -8,6 +8,7 @@ import (
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/clients"
 	"account-producer-service/internal/pkg/kafka"
+	"account-producer-service/internal/pkg/redis"
 	"account-producer-service/internal/pkg/services"
 	"account-producer-service/internal/pkg/utils"
 
@@ -18,22 +19,31 @@ func main() {
 
 	config := config.NewConfig()
 
+	redisClient := redis.NewRedisClient(config.Redis)
+	if redisErr := redisClient.Ping(); redisErr != nil {
+		utils.Logger.Warn("error during create redis client")
+		panic(redisErr)
+	}
+
 	kafkaClient, err := kafka.NewKafkaClient(config.Kafka)
 	if err != nil {
 		utils.Logger.Warn("error during create kafka client")
+		panic(kafkaClient)
 	}
 
 	kafkaProducer, err := kafkaClient.NewProducer()
 	if err != nil {
 		utils.Logger.Warn("error during kafka producer")
+		panic(kafkaProducer)
 	}
 
 	viaCepApiClient, err := clients.NewViaCepApiClient(config.ViaCep)
 	if err != nil {
 		utils.Logger.Warn("error during kafka producer")
+		panic(viaCepApiClient)
 	}
 
-	accountServiceProducer := services.NewAccountService(*kafkaProducer, *viaCepApiClient)
+	accountServiceProducer := services.NewAccountService(*kafkaProducer, redisClient, *viaCepApiClient)
 
 	go func() {
 		setupHttpServer(accountServiceProducer, config)

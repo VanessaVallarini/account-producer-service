@@ -6,6 +6,7 @@ type Config struct {
 	HealthServerHost string
 	Kafka            *KafkaConfig
 	ViaCep           *ViaCepConfig
+	Redis            *RedisConfig
 }
 
 type KafkaConfig struct {
@@ -34,4 +35,10 @@ type ViaCepConfig struct {
 	MaxRetriesHttpRequest int
 	MaxFailureRatio       float64
 	Name                  string
+}
+
+type RedisConfig struct {
+	Url         string
+	Db          int
+	ReadTimeout int
 }
