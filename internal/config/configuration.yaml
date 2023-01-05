@@ -19,7 +19,7 @@ KAFKA_MAX_MESSAGE_BYTES: 0
 KAFKA_RETRY_MAX: 0
 KAFKA_DLQ_TOPIC: "account_createorupdate_dlq account_delete_dlq account_get_dlq account_get_response_dlq"
 KAFKA_CONSUMER_TOPIC: "account_createorupdate account_delete account_get account_get_response"
-KAFKA_CONSUMER_GROUP: "account-producer-service"
+KAFKA_CONSUMER_GROUP: "account-service"
 
 VIA_CEP_URL: "https://viacep.com.br/ws/"
 VIA_CEP_MAX_RETRIES_HTTP_REQUEST: 3
