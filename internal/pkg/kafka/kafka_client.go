@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"account-producer-service/internal/models"
+	"account-producer-service/internal/pkg/utils"
 	"errors"
 	"time"
 
@@ -17,22 +18,26 @@ type KafkaClient struct {
 func NewKafkaClient(cfg *models.KafkaConfig) (*KafkaClient, error) {
 	kafkaConfig, err := generateSaramaConfig(cfg)
 	if err != nil {
-		return nil, err
+		utils.Logger.Fatal("failed to generate Sarama Config", err)
+		panic(generateSaramaConfig)
 	}
 
 	sr, err := NewSchemaRegistry(cfg.SchemaRegistryHost, cfg.SchemaRegistryUser, cfg.SchemaRegistryPassword)
 	if err != nil {
-		return nil, err
+		utils.Logger.Fatal("failed to New Schema Registry", err)
+		panic(NewSchemaRegistry)
 	}
 
 	kafkaClient, err := sarama.NewClient(cfg.Hosts, kafkaConfig)
 	if err != nil {
-		return nil, err
+		utils.Logger.Fatal("failed to New kafka Client", err)
+		panic(kafkaClient)
 	}
 
 	groupClient, err := sarama.NewConsumerGroupFromClient(cfg.ConsumerGroup, kafkaClient)
 	if err != nil {
-		return nil, err
+		utils.Logger.Fatal("failed to New Consumer Group From Client", err)
+		panic(groupClient)
 	}
 
 	return &KafkaClient{sr, kafkaClient, groupClient}, nil

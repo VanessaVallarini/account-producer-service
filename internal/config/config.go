@@ -15,6 +15,7 @@ func NewConfig() *models.Config {
 		AppName:          viperConfig.GetString("APP_NAME"),
 		ServerHost:       viperConfig.GetString("SERVER_HOST"),
 		HealthServerHost: viperConfig.GetString("HEALTH_SERVER_HOST"),
+		Database:         buildDatabaseConfig(viperConfig),
 		Kafka:            buildKafkaClientConfig(viperConfig),
 		ViaCep:           buildViaCepClientConfig(viperConfig),
 		Redis:            buildRedisConfig(viperConfig),
@@ -31,11 +32,27 @@ func initConfig() *viper.Viper {
 	err := config.ReadInConfig()
 	if err != nil {
 		utils.Logger.Fatal("failed to read config file", err)
+		panic(config.ReadInConfig())
 	}
 
 	config.AutomaticEnv()
 
 	return config
+}
+
+func buildDatabaseConfig(viperConfig *viper.Viper) *models.DatabaseConfig {
+	return &models.DatabaseConfig{
+		DatabaseUser:                viperConfig.GetString("DATABASE_USER"),
+		DatabasePassword:            viperConfig.GetString("DATEBASE_PASSWORD"),
+		DatabaseKeyspace:            viperConfig.GetString("DATEBASE_KEYSPACE"),
+		DatabaseHost:                viperConfig.GetString("DATEBASE_HOST"),
+		DatabasePort:                viperConfig.GetInt("DATEBASE_PORT"),
+		DatabaseConnectionRetryTime: viperConfig.GetInt("DATEBASE_CONNECTION_RETRY_TIME"),
+		DatabaseRetryMinArg:         viperConfig.GetInt("DATEBASE_RETRY_MIN"),
+		DatabaseRetryMaxArg:         viperConfig.GetInt("DATEBASE_RETRY_MAX"),
+		DatabaseNumRetries:          viperConfig.GetInt("DATEBASE_NUM_RETRIES"),
+		DatabaseClusterTimeout:      viperConfig.GetInt("DATEBASE_CLUSTER_TIMEOUT"),
+	}
 }
 
 func buildKafkaClientConfig(config *viper.Viper) *models.KafkaConfig {

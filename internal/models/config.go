@@ -4,9 +4,23 @@ type Config struct {
 	AppName          string
 	ServerHost       string
 	HealthServerHost string
+	Database         *DatabaseConfig
 	Kafka            *KafkaConfig
 	ViaCep           *ViaCepConfig
 	Redis            *RedisConfig
+}
+
+type DatabaseConfig struct {
+	DatabaseUser                string
+	DatabasePassword            string
+	DatabaseKeyspace            string
+	DatabaseHost                string
+	DatabasePort                int
+	DatabaseConnectionRetryTime int
+	DatabaseRetryMinArg         int
+	DatabaseRetryMaxArg         int
+	DatabaseNumRetries          int
+	DatabaseClusterTimeout      int
 }
 
 type KafkaConfig struct {

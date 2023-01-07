@@ -18,7 +18,7 @@ func (api *AccountApi) createAccount(echoContext echo.Context) error {
 
 	err := echoContext.Bind(&createAccountRequest)
 	if err != nil {
-		utils.Logger.Error("error on binding info: %v", err)
+		utils.Logger.Errorf("error on binding info: %v", err)
 		errorxErr := errorx.IllegalArgument.New(err.Error())
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}

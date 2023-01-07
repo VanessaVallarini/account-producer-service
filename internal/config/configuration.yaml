@@ -2,6 +2,17 @@ APP_NAME: "account-producer-service"
 SERVER_HOST: "0.0.0.0:1002"
 HEALTH_SERVER_HOST: "0.0.0.0:1003"
 
+DATABASE_USER: "cassandra"
+DATEBASE_PASSWORD: "cassandra"
+DATEBASE_KEYSPACE: "account_consumer_service"
+DATEBASE_HOST: "localhost"
+DATEBASE_PORT: 9042
+DATEBASE_CONNECTION_RETRY_TIME: 5
+DATEBASE_RETRY_MIN: 1
+DATEBASE_RETRY_MAX: 10
+DATEBASE_NUM_RETRIES: 5
+DATEBASE_CLUSTER_TIMEOUT: 5
+
 KAFKA_CLIENT_ID: "account-producer-service"
 KAFKA_HOSTS: "localhost:9092"
 KAFKA_SCHEMA_REGISTRY_HOST: "http://localhost:8081"
@@ -17,8 +28,8 @@ KAFKA_SCHEMA_REGISTRY_PASSWORD: ""
 KAFKA_ENABLE_EVENTS: true
 KAFKA_MAX_MESSAGE_BYTES: 0
 KAFKA_RETRY_MAX: 0
-KAFKA_DLQ_TOPIC: "account_createorupdate_dlq account_delete_dlq account_get_dlq account_get_response_dlq"
-KAFKA_CONSUMER_TOPIC: "account_createorupdate account_delete account_get account_get_response"
+KAFKA_DLQ_TOPIC: "account_createorupdate_dlq account_delete_dlq"
+KAFKA_CONSUMER_TOPIC: "account_createorupdate account_delete"
 KAFKA_CONSUMER_GROUP: "account-service"
 
 VIA_CEP_URL: "https://viacep.com.br/ws/"

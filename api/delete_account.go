@@ -14,14 +14,14 @@ func (api *AccountApi) deleteAccount(echoContext echo.Context) error {
 	ctx := echoContext.Request().Context()
 	validate := validator.New()
 
-	var deleteAccountRequest models.AccountDeleteRequest
+	var deleteAccountRequest models.AccountRequestByEmail
 
 	email := echoContext.Param("email")
 	deleteAccountRequest.Email = email
 
 	err := echoContext.Bind(&deleteAccountRequest)
 	if err != nil {
-		utils.Logger.Error("error on binding info: %v", err)
+		utils.Logger.Errorf("error on binding info: %v", err)
 		errorxErr := errorx.IllegalArgument.New(err.Error())
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}

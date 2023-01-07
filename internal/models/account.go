@@ -17,12 +17,8 @@ type AccountUpdateRequest struct {
 	Status     string `json:"status" validate:"required"`
 }
 
-type AccountDeleteRequest struct {
-	Email string `param:"email" validate:"required,email"`
-}
-
-type AccountGetRequest struct {
-	Email string `param:"email" validate:"required,email"`
+type AccountRequestByEmail struct {
+	Email string `json:"email"`
 }
 
 type Account struct {

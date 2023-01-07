@@ -37,5 +37,6 @@ func (s *server) Start(c *models.Config) {
 
 	if err != nil {
 		utils.Logger.Fatal(context.Background(), err, "unable to start server")
+		panic(s.Server.Start(c.ServerHost))
 	}
 }

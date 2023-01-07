@@ -4,18 +4,13 @@ import (
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/utils"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/go-redis/redis"
 )
 
 var (
-	onceConfigs  sync.Once
-	url          string
-	db           int
-	read_timeout int
-	redisClient  *RedisClient
+	redisClient *RedisClient
 )
 
 type RedisClientInterface interface {
@@ -49,7 +44,7 @@ func NewRedisClient(cfg *models.RedisConfig) *RedisClient {
 func (client *RedisClient) Ping() error {
 	_, err := client.wrapper.client.Ping().Result()
 	if err != nil {
-		utils.Logger.Errorf("error trying to Ping redis")
+		utils.Logger.Errorf("error trying to Ping redis %v", err)
 		return err
 	}
 	utils.Logger.Debugf("Redis PONG!")

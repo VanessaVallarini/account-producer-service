@@ -16,13 +16,16 @@ require (
 )
 
 require (
+	github.com/VanessaVallarini/account-toolkit v0.0.0-20230107133113-2ec2e2ed30bd // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	go.opentelemetry.io/otel v1.11.2 // indirect
 	go.opentelemetry.io/otel/trace v1.11.2 // indirect
+	gopkg.in/inf.v0 v0.9.1 // indirect
 )
 
 require (
@@ -34,6 +37,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/gocql/gocql v1.3.1
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
