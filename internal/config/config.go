@@ -18,7 +18,6 @@ func NewConfig() *models.Config {
 		Database:         buildDatabaseConfig(viperConfig),
 		Kafka:            buildKafkaClientConfig(viperConfig),
 		ViaCep:           buildViaCepClientConfig(viperConfig),
-		Redis:            buildRedisConfig(viperConfig),
 	}
 }
 
@@ -83,13 +82,5 @@ func buildViaCepClientConfig(config *viper.Viper) *models.ViaCepConfig {
 		MaxRetriesHttpRequest: config.GetInt("VIA_CEP_MAX_RETRIES_HTTP_REQUEST"),
 		MaxFailureRatio:       config.GetFloat64("VIA_CEP_MAX_FAILURE_RATIO"),
 		Name:                  config.GetString("VIA_CEP_NAME"),
-	}
-}
-
-func buildRedisConfig(config *viper.Viper) *models.RedisConfig {
-	return &models.RedisConfig{
-		Url:         config.GetString("REDIS_URL"),
-		Db:          config.GetInt("REDIS_DB"),
-		ReadTimeout: config.GetInt("REDIS_READ_TIMEOUT_MS"),
 	}
 }

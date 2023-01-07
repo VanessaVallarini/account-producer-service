@@ -9,7 +9,6 @@ import (
 	"account-producer-service/internal/pkg/clients"
 	"account-producer-service/internal/pkg/db"
 	"account-producer-service/internal/pkg/kafka"
-	"account-producer-service/internal/pkg/redis"
 	"account-producer-service/internal/pkg/repository"
 	"account-producer-service/internal/pkg/services"
 	"account-producer-service/internal/pkg/utils"
@@ -23,28 +22,14 @@ func main() {
 	scylla := db.NewScylla(config.Database)
 	defer scylla.Close()
 
-	redisClient := redis.NewRedisClient(config.Redis)
-	if redisErr := redisClient.Ping(); redisErr != nil {
-		utils.Logger.Fatal("error during create redis client", redisErr)
-		panic(redisErr)
-	}
+	kafkaClient := kafka.NewKafkaClient(config.Kafka)
 
-	kafkaClient, err := kafka.NewKafkaClient(config.Kafka)
+	kafkaProducer := kafkaClient.NewProducer()
 
-	kafkaProducer, err := kafkaClient.NewProducer()
-	if err != nil {
-		utils.Logger.Fatal("Error during kafka producer. Details: %v", err)
-		panic(kafkaProducer)
-	}
-
-	viaCepApiClient, err := clients.NewViaCepApiClient(config.ViaCep)
-	if err != nil {
-		utils.Logger.Fatal("Error during via Cep Api Client. Details: %v", err)
-		panic(viaCepApiClient)
-	}
+	viaCepApiClient := clients.NewViaCepApiClient(config.ViaCep)
 
 	accountRepository := repository.NewAccountRepository(scylla)
-	accountServiceProducer := services.NewAccountService(*kafkaProducer, redisClient, *viaCepApiClient, accountRepository)
+	accountServiceProducer := services.NewAccountService(kafkaProducer, viaCepApiClient, accountRepository)
 
 	go func() {
 		setupHttpServer(accountServiceProducer, config)

@@ -7,7 +7,6 @@ type Config struct {
 	Database         *DatabaseConfig
 	Kafka            *KafkaConfig
 	ViaCep           *ViaCepConfig
-	Redis            *RedisConfig
 }
 
 type DatabaseConfig struct {
@@ -49,10 +48,4 @@ type ViaCepConfig struct {
 	MaxRetriesHttpRequest int
 	MaxFailureRatio       float64
 	Name                  string
-}
-
-type RedisConfig struct {
-	Url         string
-	Db          int
-	ReadTimeout int
 }

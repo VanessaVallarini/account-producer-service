@@ -22,7 +22,7 @@ type ViaCepApiClient struct {
 	url string
 }
 
-func NewViaCepApiClient(cfg *models.ViaCepConfig) (*ViaCepApiClient, error) {
+func NewViaCepApiClient(cfg *models.ViaCepConfig) *ViaCepApiClient {
 	var st gobreaker.Settings
 	st.Name = cfg.Name
 	st.ReadyToTrip = func(counts gobreaker.Counts) bool {
@@ -33,7 +33,7 @@ func NewViaCepApiClient(cfg *models.ViaCepConfig) (*ViaCepApiClient, error) {
 	return &ViaCepApiClient{
 		cb:  gobreaker.NewCircuitBreaker(st),
 		url: cfg.Url,
-	}, nil
+	}
 }
 
 func (v *ViaCepApiClient) CallViaCepApi(ctx context.Context, ae models.ViaCepRequest) (*models.ViaCepResponse, error) {

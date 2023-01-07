@@ -2,7 +2,7 @@ package repository
 
 import (
 	"account-producer-service/internal/models"
-	"account-producer-service/internal/pkg/db/mocks"
+	"account-producer-service/internal/pkg/mocks"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,22 +12,22 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestNewFormRepository(t *testing.T) {
-	scyllaMock := mocks.NewIScylla(t)
-	accountRepository := NewAccountRepository(scyllaMock)
+func TestAccountRepository(t *testing.T) {
+	mockScylla := mocks.NewIScylla(t)
+	accountRepository := NewAccountRepository(mockScylla)
 
 	assert.NotNil(t, accountRepository)
 }
 
-func TestGetByEmail(t *testing.T) {
+func TestGetAccountByEmail(t *testing.T) {
 	t.Run("Expect to return success on get account by email", func(t *testing.T) {
 		ctx := context.Background()
-		scyllaMock := mocks.NewIScylla(t)
-		accountRepository := NewAccountRepository(scyllaMock)
+		mockScylla := mocks.NewIScylla(t)
+		accountRepository := NewAccountRepository(mockScylla)
 
 		request := models.AccountRequestByEmail{}
 
-		scyllaMock.On("ScanMap",
+		mockScylla.On("ScanMap",
 			mock.AnythingOfType("*context.emptyCtx"),
 			mock.Anything,
 			mock.Anything,
@@ -44,12 +44,12 @@ func TestGetByEmail(t *testing.T) {
 
 	t.Run("Expect to return success during query on get account by email and account not exist", func(t *testing.T) {
 		ctx := context.Background()
-		scyllaMock := mocks.NewIScylla(t)
-		accountRepository := NewAccountRepository(scyllaMock)
+		mockScylla := mocks.NewIScylla(t)
+		accountRepository := NewAccountRepository(mockScylla)
 
 		request := models.AccountRequestByEmail{}
 
-		scyllaMock.On("ScanMap",
+		mockScylla.On("ScanMap",
 			mock.AnythingOfType("*context.emptyCtx"),
 			mock.Anything,
 			mock.Anything,
@@ -66,12 +66,12 @@ func TestGetByEmail(t *testing.T) {
 
 	t.Run("Expect to return error during query on get account by email", func(t *testing.T) {
 		ctx := context.Background()
-		scyllaMock := mocks.NewIScylla(t)
-		accountRepository := NewAccountRepository(scyllaMock)
+		mockScylla := mocks.NewIScylla(t)
+		accountRepository := NewAccountRepository(mockScylla)
 
 		request := models.AccountRequestByEmail{}
 
-		scyllaMock.On("ScanMap",
+		mockScylla.On("ScanMap",
 			mock.AnythingOfType("*context.emptyCtx"),
 			mock.Anything,
 			mock.Anything,
@@ -90,8 +90,8 @@ func TestGetByEmail(t *testing.T) {
 func TestGetAllAccount(t *testing.T) {
 	t.Run("Expect to return success on get all account", func(t *testing.T) {
 		ctx := context.Background()
-		scyllaMock := mocks.NewIScylla(t)
-		accountRepository := NewAccountRepository(scyllaMock)
+		mockScylla := mocks.NewIScylla(t)
+		accountRepository := NewAccountRepository(mockScylla)
 
 		var accountList []models.Account
 		account := models.Account{
@@ -114,7 +114,7 @@ func TestGetAllAccount(t *testing.T) {
 		marshalledRequest, _ := json.Marshal(accountList)
 		json.Unmarshal(marshalledRequest, &requestAsMap)
 
-		scyllaMock.On("ScanMapSlice",
+		mockScylla.On("ScanMapSlice",
 			mock.AnythingOfType("*context.emptyCtx"),
 			mock.Anything,
 		).Return(
@@ -130,10 +130,10 @@ func TestGetAllAccount(t *testing.T) {
 
 	t.Run("Expect to return error during query on get all account", func(t *testing.T) {
 		ctx := context.Background()
-		scyllaMock := mocks.NewIScylla(t)
-		accountRepository := NewAccountRepository(scyllaMock)
+		mockScylla := mocks.NewIScylla(t)
+		accountRepository := NewAccountRepository(mockScylla)
 
-		scyllaMock.On("ScanMapSlice",
+		mockScylla.On("ScanMapSlice",
 			mock.AnythingOfType("*context.emptyCtx"),
 			mock.Anything,
 		).Return(
