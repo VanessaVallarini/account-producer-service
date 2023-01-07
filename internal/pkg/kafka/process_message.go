@@ -12,7 +12,7 @@ import (
 func (consumer *Consumer) processMessage(ctx context.Context, message *sarama.ConsumerMessage) error {
 	var account models.AccountGetResponseEvent
 
-	if err := consumer.sr.Decode(message.Value, &account, models.AccountGetResponseSubject); err != nil {
+	if err := consumer.sr.Decode(message.Value, &account, models.AccountResponseSubject); err != nil {
 		utils.Logger.Error("error during decode message consumer kafka")
 		return err
 	}

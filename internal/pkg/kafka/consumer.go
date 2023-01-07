@@ -3,6 +3,7 @@ package kafka
 import (
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/redis"
+	"account-producer-service/internal/pkg/utils"
 	"context"
 	"log"
 	"os"
@@ -14,8 +15,6 @@ import (
 	"github.com/Shopify/sarama"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/Shopify/sarama/otelsarama"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
 )
@@ -36,16 +35,24 @@ type Consumer struct {
 	dlqTopic      string
 	consumerTopic []string
 	sr            *SchemaRegistry
-	producer      sarama.SyncProducer
+	producer      *IProducer
 	redis         *redis.RedisClient
 }
 
 func NewConsumer(ctx context.Context, cfg *models.KafkaConfig, kafkaClient *KafkaClient, redisClient *redis.RedisClient) error {
+
+	kafkaProducer, err := kafkaClient.NewProducer()
+	if err != nil {
+		utils.Logger.Warn("error during kafka producer")
+		panic(kafkaProducer)
+	}
+
 	consumer := Consumer{
 		sr:            kafkaClient.SchemaRegistry,
 		ready:         make(chan bool),
 		dlqTopic:      cfg.DlqTopic,
 		consumerTopic: cfg.ConsumerTopic,
+		producer:      kafkaProducer,
 		redis:         redisClient,
 	}
 
@@ -127,7 +134,7 @@ func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 }
 
 func (consumer *Consumer) sendToDlq(ctx context.Context, dlqTopic string, message *sarama.ConsumerMessage) {
-	if topic := consumer.getTopicDlq(ctx, message); topic != "" {
+	if topic := consumer.getTopicDlq(message); topic != "" {
 		dlqTopic = topic
 	}
 
@@ -143,20 +150,11 @@ func (consumer *Consumer) sendToDlq(ctx context.Context, dlqTopic string, messag
 		msg.Headers = append(msg.Headers, *header)
 	}
 
-	partition, offset, err := consumer.producer.SendMessage(msg)
-	if err != nil {
-		zap.S().Error(err)
-		span.SetStatus(codes.Error, err.Error())
-		// change to retry queues instead of recursive approach
-		consumer.sendToDlq(ctx, dlqTopic, message)
-	}
-	span.SetAttributes(attribute.String("topic", dlqTopic))
-	span.SetAttributes(attribute.Int("partition", int(partition)))
-	span.SetAttributes(attribute.Int64("offset", offset))
-	zap.S().Infof("Message sent to dlq: topic = %s, partition = %v, offset = %v", dlqTopic, partition, offset)
+	subject := consumer.getSubject(dlqTopic)
+	consumer.producer.Send(msg, dlqTopic, subject)
 }
 
-func (consumer *Consumer) getTopicDlq(ctx context.Context, message *sarama.ConsumerMessage) string {
+func (consumer *Consumer) getTopicDlq(message *sarama.ConsumerMessage) string {
 	switch message.Topic {
 	case topic_account_createorupdate:
 		return topic_account_createorupdate_dlq
@@ -164,6 +162,19 @@ func (consumer *Consumer) getTopicDlq(ctx context.Context, message *sarama.Consu
 		return topic_account_delete_dlq
 	case topic_account_get:
 		return topic_account_get_dlq
+	}
+
+	return ""
+}
+
+func (consumer *Consumer) getSubject(dlqTopic string) string {
+	switch dlqTopic {
+	case topic_account_createorupdate_dlq:
+		return models.AccountCreateOrUpdateSubject
+	case topic_account_delete_dlq:
+		return models.AccountDeleteSubject
+	case topic_account_get_dlq:
+		return models.AccountGetSubject
 	}
 
 	return ""

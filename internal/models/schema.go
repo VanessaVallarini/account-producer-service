@@ -1,11 +1,11 @@
 package models
 
 const (
-	AccountCreateOrUpdateSubject = "com.account.createorupdate"
+	AccountCreateOrUpdateSubject = "com.account.create.or.update"
 	AccountCreateOrUpdateAvro    = `{
 		"type":"record",
 		"name":"Account_Create_Or_Update",
-		"namespace":"com.account.createorupdate",
+		"namespace":"com.account.create.or.update",
 		"fields":[
 			 {
 				"name":"email",
@@ -69,11 +69,11 @@ const (
 			 }	   
 		]
 	 }`
-	AccountGetResponseSubject = "com.account.getresponse"
-	AccountGetResponseAvro    = `{
+	AccountResponseSubject = "com.account.response"
+	AccountResponseAvro    = `{
 		"type":"record",
-		"name":"Account_Get_Response",
-		"namespace":"com.account.getresponse",
+		"name":"Account_Response",
+		"namespace":"com.account.response",
 		"fields":[
 			 {
 				"name":"email",

@@ -70,16 +70,24 @@ func (service *AccountService) CreateOrUpdateAccount(ctx context.Context, reques
 }
 
 func (service *AccountService) Delete(ctx context.Context, request models.AccountDeleteRequest) error {
-	service.producer.Send(request, topic_account_delete, models.AccountDeleteSubject)
+	aDelete := models.AccountDeleteEvent{
+		Email: request.Email,
+	}
+
+	service.producer.Send(aDelete, topic_account_delete, models.AccountDeleteSubject)
 
 	return nil
 }
 
 func (service *AccountService) GetByEmail(ctx context.Context, request models.AccountGetRequest) (*models.Account, error) {
-	service.producer.Send(request, topic_account_get, models.AccountGetSubject)
+	aGet := models.AccountGetEvent{
+		Email: request.Email,
+	}
+
+	service.producer.Send(aGet, topic_account_get, models.AccountGetSubject)
 
 	var account *models.Account
-	jsonAccount, err := service.redis.GetString(account.Email)
+	jsonAccount, err := service.redis.GetString(request.Email)
 	if err == nil && jsonAccount != "" {
 		if jsonErr := json.Unmarshal([]byte(jsonAccount), &account); jsonErr != nil {
 			utils.Logger.Errorf("error unmarshal context json from Redis: %v", jsonErr)
