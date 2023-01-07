@@ -7,23 +7,29 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-type IProducer struct {
+type IKafkaProducer interface {
+	Send(msg interface{}, topic, subject string) error
+}
+
+type KafkaProducer struct {
 	syncProducer sarama.SyncProducer
 	schema       *SchemaRegistry
 }
 
-func (kc *KafkaClient) NewProducer() (*IProducer, error) {
+func (kc *KafkaClient) NewProducer() *KafkaProducer {
 	producer, err := sarama.NewSyncProducerFromClient(kc.Client)
 	if err != nil {
-		return nil, err
+		utils.Logger.Fatal("Error during kafka producer. Details: %v", err)
+		panic(producer)
 	}
-	return &IProducer{producer, kc.SchemaRegistry}, nil
+	return &KafkaProducer{producer, kc.SchemaRegistry}
 }
 
-func (ip *IProducer) Send(msg interface{}, topic, subject string) {
+func (ip *KafkaProducer) Send(msg interface{}, topic, subject string) error {
 	msgEncoder, err := ip.schema.Encode(msg, subject)
 	if err != nil {
-		utils.Logger.Error("Error send msg: %v", err)
+		utils.Logger.Error("Error encode msg to send: %v", err)
+		return err
 	}
 
 	m := sarama.ProducerMessage{
@@ -33,4 +39,6 @@ func (ip *IProducer) Send(msg interface{}, topic, subject string) {
 		Timestamp: time.Now(),
 	}
 	ip.syncProducer.SendMessage(&m)
+
+	return nil
 }
