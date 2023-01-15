@@ -48,7 +48,7 @@ Service responsible for:
 - `View messages sent to Kafka`
     - Access the control center in docker compose -> select the cluster -> select the topic -> select the messages -> insert 0 in partition -> Enter
 - `Change architecture`
-    - If the architecture of this project changes, run the following command in the docs directory: make build
+    - If the architecture of this project changes, run the following command in the docs/diagrams directory: make build
 
 ## Stop running
 - `Stop docker`
