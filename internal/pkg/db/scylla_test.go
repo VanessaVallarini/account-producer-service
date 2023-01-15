@@ -29,84 +29,7 @@ func TestScylla(t *testing.T) {
 	assert.NotNil(t, scylla)
 }
 
-func TestScanMapReturnError(t *testing.T) {
-	t.Run("Expect to return error during query on get account by email and account does not exist", func(t *testing.T) {
-		configDatabase := models.DatabaseConfig{
-			DatabaseUser:     "cassandra",
-			DatabasePassword: "cassandra",
-			DatabaseKeyspace: "account_consumer_service",
-
-			DatabaseHost:                "localhost",
-			DatabasePort:                9042,
-			DatabaseConnectionRetryTime: 5,
-			DatabaseRetryMinArg:         1,
-			DatabaseRetryMaxArg:         10,
-			DatabaseNumRetries:          5,
-			DatabaseClusterTimeout:      5,
-		}
-		scylla := NewScylla(&configDatabase)
-		ctx := context.Background()
-
-		stmt := `SELECT * FROM account WHERE email = ?`
-		account := &models.Account{}
-		results := map[string]interface{}{
-			"email":        &account.Email,
-			"full_number":  &account.FullNumber,
-			"alias":        &account.Alias,
-			"city":         &account.City,
-			"date_time":    &account.DateTime,
-			"district":     &account.District,
-			"name":         &account.Name,
-			"public_place": &account.PublicPlace,
-			"status":       &account.Status,
-			"zip_code":     &account.ZipCode,
-		}
-
-		err := scylla.ScanMap(ctx, stmt, results, "teste")
-
-		assert.Error(t, err)
-		assert.True(t, strings.Contains(err.Error(), "not found"))
-	})
-
-	t.Run("Expect to return error during query on get account by email and stm is invalid", func(t *testing.T) {
-		configDatabase := models.DatabaseConfig{
-			DatabaseUser:     "cassandra",
-			DatabasePassword: "cassandra",
-			DatabaseKeyspace: "account_consumer_service",
-
-			DatabaseHost:                "localhost",
-			DatabasePort:                9042,
-			DatabaseConnectionRetryTime: 5,
-			DatabaseRetryMinArg:         1,
-			DatabaseRetryMaxArg:         10,
-			DatabaseNumRetries:          5,
-			DatabaseClusterTimeout:      5,
-		}
-		scylla := NewScylla(&configDatabase)
-		ctx := context.Background()
-
-		stmt := `SELECT FROM account WHERE email = ?`
-		account := &models.Account{}
-		results := map[string]interface{}{
-			"email":        &account.Email,
-			"full_number":  &account.FullNumber,
-			"alias":        &account.Alias,
-			"city":         &account.City,
-			"date_time":    &account.DateTime,
-			"district":     &account.District,
-			"name":         &account.Name,
-			"public_place": &account.PublicPlace,
-			"status":       &account.Status,
-			"zip_code":     &account.ZipCode,
-		}
-
-		err := scylla.ScanMap(ctx, stmt, results, "teste")
-
-		assert.Error(t, err)
-	})
-}
-
-func TestScanMapReturnSuccess(t *testing.T) {
+func TestScanMap(t *testing.T) {
 	t.Run("Expect to return account on get account by email", func(t *testing.T) {
 		configDatabase := models.DatabaseConfig{
 			DatabaseUser:     "cassandra",
@@ -164,10 +87,8 @@ func TestScanMapReturnSuccess(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotNil(t, account)
 	})
-}
 
-func TestScanMapSliceReturnError(t *testing.T) {
-	t.Run("Expect to return error during query on get all accounts and stm is invalid", func(t *testing.T) {
+	t.Run("Expect to return error during query on get account by email when account does not exist", func(t *testing.T) {
 		configDatabase := models.DatabaseConfig{
 			DatabaseUser:     "cassandra",
 			DatabasePassword: "cassandra",
@@ -184,15 +105,103 @@ func TestScanMapSliceReturnError(t *testing.T) {
 		scylla := NewScylla(&configDatabase)
 		ctx := context.Background()
 
-		stmt := `SELECT FROM account`
-		uList, err := scylla.ScanMapSlice(ctx, stmt)
+		stmt := `SELECT * FROM account WHERE email = ?`
+		account := &models.Account{}
+		results := map[string]interface{}{
+			"email":        &account.Email,
+			"full_number":  &account.FullNumber,
+			"alias":        &account.Alias,
+			"city":         &account.City,
+			"date_time":    &account.DateTime,
+			"district":     &account.District,
+			"name":         &account.Name,
+			"public_place": &account.PublicPlace,
+			"status":       &account.Status,
+			"zip_code":     &account.ZipCode,
+		}
+
+		err := scylla.ScanMap(ctx, stmt, results, "teste")
 
 		assert.Error(t, err)
-		assert.Nil(t, uList)
+		assert.True(t, strings.Contains(err.Error(), "not found"))
+	})
+
+	t.Run("Expect to return error during query on get account by email when stm is invalid", func(t *testing.T) {
+		configDatabase := models.DatabaseConfig{
+			DatabaseUser:     "cassandra",
+			DatabasePassword: "cassandra",
+			DatabaseKeyspace: "account_consumer_service",
+
+			DatabaseHost:                "localhost",
+			DatabasePort:                9042,
+			DatabaseConnectionRetryTime: 5,
+			DatabaseRetryMinArg:         1,
+			DatabaseRetryMaxArg:         10,
+			DatabaseNumRetries:          5,
+			DatabaseClusterTimeout:      5,
+		}
+		scylla := NewScylla(&configDatabase)
+		ctx := context.Background()
+
+		stmt := `SELECT FROM account WHERE email = ?`
+		account := &models.Account{}
+		results := map[string]interface{}{
+			"email":        &account.Email,
+			"full_number":  &account.FullNumber,
+			"alias":        &account.Alias,
+			"city":         &account.City,
+			"date_time":    &account.DateTime,
+			"district":     &account.District,
+			"name":         &account.Name,
+			"public_place": &account.PublicPlace,
+			"status":       &account.Status,
+			"zip_code":     &account.ZipCode,
+		}
+
+		err := scylla.ScanMap(ctx, stmt, results, "teste")
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Expect to return error during query on get account by email when arguments is invalid", func(t *testing.T) {
+		configDatabase := models.DatabaseConfig{
+			DatabaseUser:     "cassandra",
+			DatabasePassword: "cassandra",
+			DatabaseKeyspace: "account_consumer_service",
+
+			DatabaseHost:                "localhost",
+			DatabasePort:                9042,
+			DatabaseConnectionRetryTime: 5,
+			DatabaseRetryMinArg:         1,
+			DatabaseRetryMaxArg:         10,
+			DatabaseNumRetries:          5,
+			DatabaseClusterTimeout:      5,
+		}
+		scylla := NewScylla(&configDatabase)
+		ctx := context.Background()
+
+		stmt := `SELECT * FROM account WHERE email = ?`
+		account := &models.Account{}
+		results := map[string]interface{}{
+			"email":        &account.Email,
+			"full_number":  &account.FullNumber,
+			"alias":        &account.Alias,
+			"city":         &account.City,
+			"date_time":    &account.DateTime,
+			"district":     &account.District,
+			"name":         &account.Name,
+			"public_place": &account.PublicPlace,
+			"status":       &account.Status,
+			"zip_code":     &account.ZipCode,
+		}
+
+		err := scylla.ScanMap(ctx, stmt, results)
+
+		assert.Error(t, err)
 	})
 }
 
-func TestScanMapSliceSuccess(t *testing.T) {
+func TestScanMapSlice(t *testing.T) {
 	t.Run("Expect to return success on get all accounts", func(t *testing.T) {
 		configDatabase := models.DatabaseConfig{
 			DatabaseUser:     "cassandra",
@@ -236,5 +245,29 @@ func TestScanMapSliceSuccess(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.NotNil(t, uList)
+	})
+
+	t.Run("Expect to return error during query on get all accounts when stm is invalid", func(t *testing.T) {
+		configDatabase := models.DatabaseConfig{
+			DatabaseUser:     "cassandra",
+			DatabasePassword: "cassandra",
+			DatabaseKeyspace: "account_consumer_service",
+
+			DatabaseHost:                "localhost",
+			DatabasePort:                9042,
+			DatabaseConnectionRetryTime: 5,
+			DatabaseRetryMinArg:         1,
+			DatabaseRetryMaxArg:         10,
+			DatabaseNumRetries:          5,
+			DatabaseClusterTimeout:      5,
+		}
+		scylla := NewScylla(&configDatabase)
+		ctx := context.Background()
+
+		stmt := `SELECT FROM account`
+		uList, err := scylla.ScanMapSlice(ctx, stmt)
+
+		assert.Error(t, err)
+		assert.Nil(t, uList)
 	})
 }
