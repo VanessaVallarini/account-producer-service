@@ -49,6 +49,11 @@ func (s *Scylla) ScanMapSlice(ctx context.Context, stmt string, arguments ...int
 	return q.Iter().SliceMap()
 }
 
+func (s *Scylla) Insert(ctx context.Context, stmt string, arguments ...interface{}) error {
+	q := s.session.Query(stmt, arguments...).WithContext(ctx)
+	return q.Exec()
+}
+
 func (s *Scylla) Close() {
 	s.session.Close()
 }
