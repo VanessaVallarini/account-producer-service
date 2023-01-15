@@ -28,7 +28,6 @@ KAFKA_SCHEMA_REGISTRY_PASSWORD: ""
 KAFKA_ENABLE_EVENTS: true
 KAFKA_MAX_MESSAGE_BYTES: 0
 KAFKA_RETRY_MAX: 0
-KAFKA_DLQ_TOPIC: "account_createorupdate_dlq account_delete_dlq"
 KAFKA_CONSUMER_TOPIC: "account_createorupdate account_delete"
 KAFKA_CONSUMER_GROUP: "account-service"
 
