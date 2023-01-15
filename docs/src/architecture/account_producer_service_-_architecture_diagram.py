@@ -8,7 +8,7 @@ from diagrams.onprem.queue import Kafka
 from diagrams.aws.database import Aurora
 
 
-with Diagram("account consumer service", show = False):
+with Diagram("account producer service", show = False):
     blueline=Edge(color="blue",style="bold")
     darkOrange=Edge(color="darkOrange",style="bold")
     blackline=Edge(color="black",style="bold")
