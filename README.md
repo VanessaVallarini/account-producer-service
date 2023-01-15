@@ -51,3 +51,6 @@ Service responsible for:
 ## Stop running
 - `Stop docker`
     - docker-compose -f local-dev/docker-compose.yaml --profile infra down
+
+## Architecture
+![Architecture Diagram](docs/diagrams/dist/architecture/account_producer_service.png)
