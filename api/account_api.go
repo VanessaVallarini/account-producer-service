@@ -7,10 +7,10 @@ import (
 )
 
 type AccountApi struct {
-	service *services.AccountService
+	service services.IAccountService
 }
 
-func NewAccountApi(service *services.AccountService) *AccountApi {
+func NewAccountApi(service services.IAccountService) *AccountApi {
 	return &AccountApi{
 		service: service,
 	}

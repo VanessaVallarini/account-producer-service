@@ -29,10 +29,10 @@ func main() {
 	viaCepApiClient := clients.NewViaCepApiClient(config.ViaCep)
 
 	accountRepository := repository.NewAccountRepository(scylla)
-	accountServiceProducer := services.NewAccountService(kafkaProducer, viaCepApiClient, accountRepository)
+	accountService := services.NewAccountService(kafkaProducer, viaCepApiClient, accountRepository)
 
 	go func() {
-		setupHttpServer(accountServiceProducer, config)
+		setupHttpServer(accountService, config)
 	}()
 
 	utils.Logger.Info("start application")
@@ -40,7 +40,7 @@ func main() {
 	health.NewHealthServer()
 }
 
-func setupHttpServer(asp *services.AccountService, config *models.Config) *echo.Echo {
+func setupHttpServer(asp services.IAccountService, config *models.Config) *echo.Echo {
 
 	accountApi := api.NewAccountApi(asp)
 	s := server.NewServer()

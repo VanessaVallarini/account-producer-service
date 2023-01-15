@@ -38,5 +38,5 @@ func (api *AccountApi) deleteAccount(echoContext echo.Context) error {
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}
 
-	return echoContext.NoContent(http.StatusCreated)
+	return echoContext.NoContent(http.StatusOK)
 }

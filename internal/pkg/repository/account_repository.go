@@ -6,7 +6,6 @@ import (
 	"account-producer-service/internal/pkg/utils"
 	"context"
 	"encoding/json"
-	"strings"
 )
 
 type IAccountRepository interface {
@@ -41,9 +40,6 @@ func (repo *AccountRepository) GetByEmail(ctx context.Context, a models.AccountR
 	}
 	err := repo.scylla.ScanMap(ctx, stmt, results, a.Email)
 	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			return nil, nil
-		}
 		utils.Logger.Errorf("error during query get account by email", err)
 		return nil, err
 	}

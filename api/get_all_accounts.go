@@ -17,5 +17,9 @@ func (api *AccountApi) getAllAccounts(echoContext echo.Context) error {
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}
 
+	if cap(accounts) == 0 && err == nil {
+		return echoContext.JSON(http.StatusNotFound, "Account does not exist")
+	}
+
 	return echoContext.JSON(http.StatusOK, accounts)
 }

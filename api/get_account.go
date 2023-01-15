@@ -38,5 +38,9 @@ func (api *AccountApi) getAccount(echoContext echo.Context) error {
 		return utils.BuildErrorResponse(echoContext, errorxErr)
 	}
 
+	if account == nil && err == nil {
+		return echoContext.JSON(http.StatusNotFound, "Account does not exist")
+	}
+
 	return echoContext.JSON(http.StatusOK, account)
 }

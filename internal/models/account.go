@@ -18,7 +18,7 @@ type AccountUpdateRequest struct {
 }
 
 type AccountRequestByEmail struct {
-	Email string `json:"email"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 type Account struct {

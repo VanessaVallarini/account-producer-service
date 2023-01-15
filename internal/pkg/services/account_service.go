@@ -7,6 +7,7 @@ import (
 	"account-producer-service/internal/pkg/repository"
 	"account-producer-service/internal/pkg/utils"
 	"context"
+	"strings"
 
 	"github.com/VanessaVallarini/account-toolkit/avros"
 )
@@ -88,6 +89,9 @@ func (service *AccountService) Delete(ctx context.Context, request models.Accoun
 func (service *AccountService) GetByEmail(ctx context.Context, request models.AccountRequestByEmail) (*models.Account, error) {
 	account, err := service.repository.GetByEmail(ctx, request)
 	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return nil, nil
+		}
 		utils.Logger.Errorf("error during get account by email", err)
 		return nil, err
 	}
