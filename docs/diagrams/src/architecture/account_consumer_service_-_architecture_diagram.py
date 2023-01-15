@@ -14,20 +14,20 @@ with Diagram("account producer service", show = False):
     darkOrange=Edge(color="darkOrange",style="bold")
     blackline=Edge(color="black",style="bold")
 
-    with Cluster("account-consumer-pod"):
-        consumerPod=Pod("account-consumer-pod")
+    with Cluster("account-producer-pod"):
+        producerPod=Pod("account-producer-pod")
 
     with Cluster("external"):
-       consumerCreateKafka=Kafka("account-create")
-       consumerUpdateKafka=Kafka("account-update") 
-       consumerAvros=Service("account-toolkit")  
-       consumerViaCepApi=Service("via-cep-api")
+       producerCreateKafka=Kafka("account-create")
+       producerUpdateKafka=Kafka("account-update") 
+       accountAvros=Service("account-toolkit")  
+       producerViaCepApi=Service("via-cep-api")
 
     with Cluster("scyllaDb"):
-       consumerDatabase=Aurora("account-database")
+       accountDatabase=Aurora("account-database")
 
-    consumerPod - darkOrange >> consumerCreateKafka
-    consumerPod - darkOrange >> consumerUpdateKafka
-    consumerPod - blackline >> consumerAvros
-    consumerPod - blackline >> consumerViaCepApi
-    consumerPod - blueline >> consumerDatabase
+    producerPod - darkOrange >> producerCreateKafka
+    producerPod - darkOrange >> producerUpdateKafka
+    producerPod - blackline >> accountAvros
+    producerPod - blackline >> producerViaCepApi
+    producerPod - blueline >> accountDatabase
