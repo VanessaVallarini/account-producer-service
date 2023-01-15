@@ -60,7 +60,8 @@ func (v *ViaCepApiClient) CallViaCepApi(ctx context.Context, ae models.ViaCepReq
 
 	var viaCepResponse models.ViaCepResponse
 	if err := json.Unmarshal(body.([]byte), &viaCepResponse); err != nil {
-		panic(err)
+		utils.Logger.Warn("error during unmarshal return via cep api")
+		return nil, err
 	}
 
 	return &viaCepResponse, nil
