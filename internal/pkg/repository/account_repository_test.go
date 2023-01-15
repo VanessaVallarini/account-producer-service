@@ -42,7 +42,7 @@ func TestGetAccountByEmail(t *testing.T) {
 		assert.NotNil(t, response)
 	})
 
-	t.Run("Expect to return success during query on get account by email and account not exist", func(t *testing.T) {
+	t.Run("Expect to return error during query on get account by email and account not exist", func(t *testing.T) {
 		ctx := context.Background()
 		mockScylla := mocks.NewIScylla(t)
 		accountRepository := NewAccountRepository(mockScylla)
@@ -60,7 +60,7 @@ func TestGetAccountByEmail(t *testing.T) {
 
 		response, err := accountRepository.GetByEmail(ctx, request)
 
-		assert.Nil(t, err)
+		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
