@@ -88,7 +88,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"create2@email.com\",\n    \"full_number\": \"5511964127229\",\n    \"name\": \"Create2 Test Redis\",\n    \"zip_code\": \"86060-660\",\n    \"status\": \"ACTIVE\"\n}",
+							"raw": "{\n    \"email\": \"vanessaUpdate-active-to-inactive@email.com\",\n    \"full_number\": \"5511964127229\",\n    \"name\": \"Van Create Test\",\n    \"zip_code\": \"86060-660\",\n    \"status\": \"ACTIVE\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -116,7 +116,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1002/v1/accounts/create@email.com",
+							"raw": "http://localhost:1002/v1/accounts/vanessaCreate3@email.com",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -125,7 +125,28 @@
 							"path": [
 								"v1",
 								"accounts",
-								"create@email.com"
+								"vanessaCreate3@email.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1002/v1/accounts/vanessaCreate3@email.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1002",
+							"path": [
+								"v1",
+								"accounts",
+								"vanessaCreate3@email.com"
 							]
 						}
 					},
