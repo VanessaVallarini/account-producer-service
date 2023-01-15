@@ -10,6 +10,7 @@ import (
 
 const (
 	topic_account_createorupdate = "account_createorupdate"
+	topic_account_delete         = "account_delete"
 )
 
 func TestKafkaProducer(t *testing.T) {
@@ -80,6 +81,38 @@ func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 
 		assert.Error(t, err)
 	})
+
+	t.Run("Expect to return error during send msg in DLQ to delete account", func(t *testing.T) {
+		configKafka := models.KafkaConfig{
+			ClientId:               "account-consumer-service",
+			Hosts:                  []string{"localhost:9092"},
+			SchemaRegistryHost:     "http://localhost:8081",
+			Acks:                   "all",
+			Timeout:                10,
+			UseAuthentication:      false,
+			EnableTLS:              true,
+			SaslMechanism:          "SCRAM-SHA-512",
+			User:                   "kafka",
+			Password:               "kafka",
+			SchemaRegistryUser:     "",
+			SchemaRegistryPassword: "",
+			EnableEvents:           true,
+			MaxMessageBytes:        0,
+			RetryMax:               0,
+			ConsumerTopic:          []string{"account_createorupdate account_delete"},
+			ConsumerGroup:          "account-service",
+		}
+		kafkaClient := NewKafkaClient(&configKafka)
+		producer := kafkaClient.NewProducer()
+
+		request := models.AccountRequestByEmail{
+			Email: "lorem1@email.com",
+		}
+
+		err := producer.Send(request, topic_account_delete, avros.AccountDeleteSubject)
+
+		assert.Error(t, err)
+	})
 }
 
 func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
@@ -119,6 +152,38 @@ func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
 		}
 
 		err := producer.Send(account, topic_account_createorupdate, avros.AccountCreateOrUpdateSubject)
+
+		assert.Nil(t, err)
+	})
+
+	t.Run("Expect to return success during send msg in DLQ to delete account", func(t *testing.T) {
+		configKafka := models.KafkaConfig{
+			ClientId:               "account-consumer-service",
+			Hosts:                  []string{"localhost:9092"},
+			SchemaRegistryHost:     "http://localhost:8081",
+			Acks:                   "all",
+			Timeout:                10,
+			UseAuthentication:      false,
+			EnableTLS:              true,
+			SaslMechanism:          "SCRAM-SHA-512",
+			User:                   "kafka",
+			Password:               "kafka",
+			SchemaRegistryUser:     "",
+			SchemaRegistryPassword: "",
+			EnableEvents:           true,
+			MaxMessageBytes:        0,
+			RetryMax:               0,
+			ConsumerTopic:          []string{"account_createorupdate account_delete"},
+			ConsumerGroup:          "account-service",
+		}
+		kafkaClient := NewKafkaClient(&configKafka)
+		producer := kafkaClient.NewProducer()
+
+		request := avros.AccountDeleteEvent{
+			Email: "lorem1@email.com",
+		}
+
+		err := producer.Send(request, topic_account_delete, avros.AccountDeleteSubject)
 
 		assert.Nil(t, err)
 	})
