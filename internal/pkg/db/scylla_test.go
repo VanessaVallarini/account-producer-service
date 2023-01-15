@@ -68,7 +68,7 @@ func TestScanMapReturnError(t *testing.T) {
 		assert.True(t, strings.Contains(err.Error(), "not found"))
 	})
 
-	t.Run("Expect to return error during query on get account by email", func(t *testing.T) {
+	t.Run("Expect to return error during query on get account by email and stm is invalid", func(t *testing.T) {
 		configDatabase := models.DatabaseConfig{
 			DatabaseUser:     "cassandra",
 			DatabasePassword: "cassandra",
@@ -167,7 +167,7 @@ func TestScanMapReturnSuccess(t *testing.T) {
 }
 
 func TestScanMapSliceReturnError(t *testing.T) {
-	t.Run("Expect to return error during query on get all accounts", func(t *testing.T) {
+	t.Run("Expect to return error during query on get all accounts and stm is invalid", func(t *testing.T) {
 		configDatabase := models.DatabaseConfig{
 			DatabaseUser:     "cassandra",
 			DatabasePassword: "cassandra",
