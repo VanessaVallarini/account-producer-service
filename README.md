@@ -1,7 +1,10 @@
 # account-producer-service
 
 ## About
-Service responsible for account management, integration with partners, such as Via Cep and with the producer service - the only one that has a direct connection to the database.
+Service responsible for:
+- Produce account creation, update and deletion messages;
+- Return accounts or inform when account does not exist and
+- Integrate with partners, such as Via Cep.
 
 ## Technologies
 * Golang 1.18
@@ -9,41 +12,41 @@ Service responsible for account management, integration with partners, such as V
 ## Development requirements
 * Docker Compose
 * Visual Studio Code
+* DBeaver
+* Driver Scylla (https://downloads.datastax.com/jdbc/cql/2.0.11.1012/SimbaCassandraJDBC42-2.0.11.1012.zip)
 
 ## Directory Structure
 - `api`
-    - OpenAPI/Swagger specs, JSON schema files, protocol definition files.
+     - OpenAPI/Swagger specs, JSON schema files, protocol definition files.
 - `build`
-    - It has all cloud package, container (Docker), operating system (deb, rpm, pkg) and scripts settings.
+     - It has all cloud package, container (Docker), operating system (deb, rpm, pkg) and scripts settings.
 - `cmd`
-    - It has the `main` function that imports and invokes code from the `/internal` and `/pkg` directories.
+     - It has the `main` function that imports and invokes code from the `/internal` and `/pkg` directories.
+- `docs`
+     - It has an integration architecture for this API.
 - `internal`
-    - It has all the code that is not available for import.
+     - It has all the code that is not available for import.
 - `local-dev`
-    - Possui toda configuração do docker.
+     - It has all docker configuration.
 
 ## Running
 - `Docker`
     - Run the following command: docker-compose -f local-dev/docker-compose.yaml --profile infra up -d
 - `Create subject kafka`
-    - Create subject
-    curl --location --request POST 'http://localhost:8081/subjects/com.account.create/versions' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-        "schema": "{\"type\":\"record\",\"name\":\"Account_Create\",\"namespace\":\"com.account.create\",\"fields\":[{\"name\":\"alias\",\"type\":\"string\"},{\"name\":\"city\",\"type\":\"string\"},{\"name\":\"district\",\"type\":\"string\"},{\"name\":\"email\",\"type\":\"string\"},{\"name\":\"full_number\",\"type\":\"string\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"public_place\",\"type\":\"string\"},{\"name\":\"zip_code\",\"type\":\"string\"}]}"
-    }'
+    - Run the Subjects Create folder from the Postman file available in the directory account-producer-service/resources
+- `Config DB`
+    - In DBeaver create a new connection with the following settings:
+      - JDBC url: jdbc:cassandra://localhost:9042;AuthMech=1;UID=cassandra;PWD=cassandra
+      - Host: localhost
+      - Port: 9042
+      - Username: cassandra
+      - Password: cassandra
+    - Execute no DBeaver e na conexão criada na etapa anterior, os comandos disponíveis em: account-consumer-service/build/package/docker/scylla/cql/V001_setup.cql
 - `Run the project`
-    - Run -> start debugging -> to allow -> perform account creation via Postman -> stop
-    curl --location --request POST 'http://localhost:1002/v1/accounts' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-        "email": "van3@email.com'\''",
-        "full_number": "5511964127228",
-        "name": "Van",
-        "zip_code": "01001-000"  
-    }'
+    - Run -> start debugging -> to allow
+    - Run some of the requests available in the Postman file API available in the account-producter-service/resources directory
 - `View messages sent to Kafka`
-    - Access the control center in docker compose -> select the cluster -> select the topic (account_create) -> select the messages -> insert 0 in partition -> Enter
+    - Access the control center in docker compose -> select the cluster -> select the topic -> select the messages -> insert 0 in partition -> Enter
 
 ## Stop running
 - `Stop docker`

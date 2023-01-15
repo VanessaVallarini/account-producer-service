@@ -1,0 +1,254 @@
+{
+	"info": {
+		"_postman_id": "6bd61fde-e54a-492a-b6fc-bcb7c5a5282a",
+		"name": "kafka local",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20948507"
+	},
+	"item": [
+		{
+			"name": "Subjects Create",
+			"item": [
+				{
+					"name": "create schema create or update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"schema\": \"{\\\"type\\\":\\\"record\\\",\\\"name\\\":\\\"Account_Create_Or_Update\\\",\\\"namespace\\\":\\\"com.account.create.or.update\\\",\\\"fields\\\":[{\\\"name\\\":\\\"email\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"full_number\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"alias\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"city\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"district\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"name\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"public_place\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"status\\\",\\\"type\\\":\\\"string\\\"},{\\\"name\\\":\\\"zip_code\\\",\\\"type\\\":\\\"string\\\"}]}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/subjects/com.account.create.or.update/versions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"subjects",
+								"com.account.create.or.update",
+								"versions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create schema delete",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"schema\": \"{\\\"type\\\":\\\"record\\\",\\\"name\\\":\\\"Account_Delete\\\",\\\"namespace\\\":\\\"com.account.delete\\\",\\\"fields\\\":[{\\\"name\\\":\\\"email\\\",\\\"type\\\":\\\"string\\\"}]}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/subjects/com.account.delete/versions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"subjects",
+								"com.account.delete",
+								"versions"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API",
+			"item": [
+				{
+					"name": "create or update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"create2@email.com\",\n    \"full_number\": \"5511964127229\",\n    \"name\": \"Create2 Test Redis\",\n    \"zip_code\": \"86060-660\",\n    \"status\": \"ACTIVE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1002/v1/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1002",
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1002/v1/accounts/create@email.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1002",
+							"path": [
+								"v1",
+								"accounts",
+								"create@email.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1002/v1/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1002",
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Via Cep",
+			"item": [
+				{
+					"name": "consulta cep",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://viacep.com.br/ws/01001-000/json/",
+							"protocol": "https",
+							"host": [
+								"viacep",
+								"com",
+								"br"
+							],
+							"path": [
+								"ws",
+								"01001-000",
+								"json",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subjects Validate or Delete",
+			"item": [
+				{
+					"name": "Validate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/subjects",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"subjects"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/subjects/:my_subject/versions/:my_versions?permanent=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"subjects",
+								":my_subject",
+								"versions",
+								":my_versions"
+							],
+							"query": [
+								{
+									"key": "permanent",
+									"value": "true"
+								}
+							],
+							"variable": [
+								{
+									"key": "my_subject",
+									"value": "com.account.createorupdate"
+								},
+								{
+									"key": "my_versions",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
