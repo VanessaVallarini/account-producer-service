@@ -5,22 +5,24 @@ os.chdir(os.path.dirname(sys.argv[0]))
 from diagrams import Cluster, Diagram, Edge
 from diagrams.k8s.compute import Pod
 from diagrams.onprem.queue import Kafka
-from diagrams.aws.network import Route53
+from diagrams.aws.database import Aurora
 
 
-with Diagram("account producer service", show = False):
+with Diagram("account consumer service", show = False):
     blueline=Edge(color="blue",style="bold")
     darkOrange=Edge(color="darkOrange",style="bold")
     blackline=Edge(color="black",style="bold")
-
-    with Cluster("account-endpoint"):
-        accountEndpoint=Route53("account-endpoint")
     
-    with Cluster("account-producer-pod"):
-        producerPod=Pod("producer-pod")
+    with Cluster("account-consumer-pod"):
+        consumerPod=Pod("account-consumer-pod")
 
-    with Cluster("kafka-producer"):
-        producerKafka=Kafka("producer-kafka")
+    with Cluster("external"):
+       consumerCreateKafka=Kafka("account-create")
+       consumerUpdateKafka=Kafka("account-update")   
 
-    accountEndpoint - blueline >> producerPod
-    producerPod - darkOrange >> producerKafka
+    with Cluster("scyllaDb"):
+       consumerDatabase=Aurora("account-database")
+
+    consumerPod - darkOrange >> consumerCreateKafka
+    consumerPod - darkOrange >> consumerUpdateKafka
+    consumerPod - blueline >> consumerDatabase
