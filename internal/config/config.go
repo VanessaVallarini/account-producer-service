@@ -8,8 +8,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-func NewConfig() *models.Config {
-	viperConfig := initConfig()
+func NewConfig() (*models.Config, error) {
+	viperConfig, err := initConfig()
+	if err != nil {
+		utils.Logger.Fatal("failed to read config file", err)
+		return nil, err
+	}
 
 	return &models.Config{
 		AppName:          viperConfig.GetString("APP_NAME"),
@@ -18,10 +22,10 @@ func NewConfig() *models.Config {
 		Database:         buildDatabaseConfig(viperConfig),
 		Kafka:            buildKafkaClientConfig(viperConfig),
 		ViaCep:           buildViaCepClientConfig(viperConfig),
-	}
+	}, nil
 }
 
-func initConfig() *viper.Viper {
+func initConfig() (*viper.Viper, error) {
 	config := viper.New()
 
 	config.SetConfigType("yml")
@@ -31,12 +35,12 @@ func initConfig() *viper.Viper {
 	err := config.ReadInConfig()
 	if err != nil {
 		utils.Logger.Fatal("failed to read config file", err)
-		panic(config.ReadInConfig())
+		return nil, err
 	}
 
 	config.AutomaticEnv()
 
-	return config
+	return config, nil
 }
 
 func buildDatabaseConfig(viperConfig *viper.Viper) *models.DatabaseConfig {

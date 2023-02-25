@@ -16,13 +16,13 @@ type KafkaProducer struct {
 	schema       *SchemaRegistry
 }
 
-func (kc *KafkaClient) NewProducer() *KafkaProducer {
+func (kc *KafkaClient) NewProducer() (*KafkaProducer, error) {
 	producer, err := sarama.NewSyncProducerFromClient(kc.Client)
 	if err != nil {
 		utils.Logger.Fatal("Error during kafka producer. Details: %v", err)
-		panic(producer)
+		return nil, err
 	}
-	return &KafkaProducer{producer, kc.SchemaRegistry}
+	return &KafkaProducer{producer, kc.SchemaRegistry}, nil
 }
 
 func (ip *KafkaProducer) Send(msg interface{}, topic, subject string) error {

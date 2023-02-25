@@ -15,32 +15,32 @@ type KafkaClient struct {
 	GroupClient    sarama.ConsumerGroup
 }
 
-func NewKafkaClient(cfg *models.KafkaConfig) *KafkaClient {
+func NewKafkaClient(cfg *models.KafkaConfig) (*KafkaClient, error) {
 	kafkaConfig, err := generateSaramaConfig(cfg)
 	if err != nil {
 		utils.Logger.Fatal("failed to generate Sarama Config", err)
-		panic(generateSaramaConfig)
+		return nil, err
 	}
 
 	sr, err := NewSchemaRegistry(cfg.SchemaRegistryHost, cfg.SchemaRegistryUser, cfg.SchemaRegistryPassword)
 	if err != nil {
 		utils.Logger.Fatal("failed to New Schema Registry", err)
-		panic(NewSchemaRegistry)
+		return nil, err
 	}
 
 	kafkaClient, err := sarama.NewClient(cfg.Hosts, kafkaConfig)
 	if err != nil {
 		utils.Logger.Fatal("failed to New kafka Client", err)
-		panic(kafkaClient)
+		return nil, err
 	}
 
 	groupClient, err := sarama.NewConsumerGroupFromClient(cfg.ConsumerGroup, kafkaClient)
 	if err != nil {
 		utils.Logger.Fatal("failed to New Consumer Group From Client", err)
-		panic(groupClient)
+		return nil, err
 	}
 
-	return &KafkaClient{sr, kafkaClient, groupClient}
+	return &KafkaClient{sr, kafkaClient, groupClient}, nil
 }
 
 func generateSaramaConfig(cfg *models.KafkaConfig) (*sarama.Config, error) {

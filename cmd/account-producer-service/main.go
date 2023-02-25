@@ -17,14 +17,26 @@ import (
 )
 
 func main() {
-	config := config.NewConfig()
+	config, err := config.NewConfig()
+	if err != nil {
+		panic(err)
+	}
 
-	scylla := db.NewScylla(config.Database)
+	scylla, err := db.NewScylla(config.Database)
+	if err != nil {
+		panic(err)
+	}
 	defer scylla.Close()
 
-	kafkaClient := kafka.NewKafkaClient(config.Kafka)
+	kafkaClient, err := kafka.NewKafkaClient(config.Kafka)
+	if err != nil {
+		panic(err)
+	}
 
-	kafkaProducer := kafkaClient.NewProducer()
+	kafkaProducer, err := kafkaClient.NewProducer()
+	if err != nil {
+		panic(err)
+	}
 
 	viaCepApiClient := clients.NewViaCepApiClient(config.ViaCep)
 

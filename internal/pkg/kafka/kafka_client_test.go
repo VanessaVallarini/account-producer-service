@@ -28,7 +28,7 @@ func TestKafkaClient(t *testing.T) {
 		ConsumerGroup:          "account-service",
 	}
 
-	kafkaClient := NewKafkaClient(&configKafka)
+	kafkaClient, _ := NewKafkaClient(&configKafka)
 
 	assert.NotNil(t, kafkaClient)
 }

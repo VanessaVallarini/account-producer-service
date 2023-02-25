@@ -34,8 +34,8 @@ func TestKafkaProducer(t *testing.T) {
 		ConsumerGroup:          "account-service",
 	}
 
-	kafkaClient := NewKafkaClient(&configKafka)
-	producer := kafkaClient.NewProducer()
+	kafkaClient, _ := NewKafkaClient(&configKafka)
+	producer, _ := kafkaClient.NewProducer()
 
 	assert.NotNil(t, producer)
 }
@@ -61,8 +61,8 @@ func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 			ConsumerTopic:          []string{"account_createorupdate account_delete"},
 			ConsumerGroup:          "account-service",
 		}
-		kafkaClient := NewKafkaClient(&configKafka)
-		producer := kafkaClient.NewProducer()
+		kafkaClient, _ := NewKafkaClient(&configKafka)
+		producer, _ := kafkaClient.NewProducer()
 
 		account := models.Account{
 			Email:       "lorem1@email.com",
@@ -102,8 +102,8 @@ func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 			ConsumerTopic:          []string{"account_createorupdate account_delete"},
 			ConsumerGroup:          "account-service",
 		}
-		kafkaClient := NewKafkaClient(&configKafka)
-		producer := kafkaClient.NewProducer()
+		kafkaClient, _ := NewKafkaClient(&configKafka)
+		producer, _ := kafkaClient.NewProducer()
 
 		request := models.AccountRequestByEmail{
 			Email: "lorem1@email.com",
@@ -136,8 +136,8 @@ func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
 			ConsumerTopic:          []string{"account_createorupdate account_delete"},
 			ConsumerGroup:          "account-service",
 		}
-		kafkaClient := NewKafkaClient(&configKafka)
-		producer := kafkaClient.NewProducer()
+		kafkaClient, _ := NewKafkaClient(&configKafka)
+		producer, _ := kafkaClient.NewProducer()
 
 		account := avros.AccountCreateOrUpdateEvent{
 			Email:       "lorem1@email.com",
@@ -176,8 +176,8 @@ func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
 			ConsumerTopic:          []string{"account_createorupdate account_delete"},
 			ConsumerGroup:          "account-service",
 		}
-		kafkaClient := NewKafkaClient(&configKafka)
-		producer := kafkaClient.NewProducer()
+		kafkaClient, _ := NewKafkaClient(&configKafka)
+		producer, _ := kafkaClient.NewProducer()
 
 		request := avros.AccountDeleteEvent{
 			Email: "lorem1@email.com",
