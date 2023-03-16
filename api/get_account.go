@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/joomcode/errorx"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func (api *AccountApi) getAccount(echoContext echo.Context) error {

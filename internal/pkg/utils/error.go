@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/joomcode/errorx"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 var NotFound = errorx.NewType(errorx.NewNamespace("common"), "not_found", errorx.NotFound())

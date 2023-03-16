@@ -1,6 +1,6 @@
 APP_NAME: "account-producer-service"
-SERVER_HOST: "0.0.0.0:1002"
-HEALTH_SERVER_HOST: "0.0.0.0:1003"
+SERVER_HOST: "0.0.0.0:8080"
+HEALTH_SERVER_HOST: "0.0.0.0:8081"
 
 DATABASE_USER: "cassandra"
 DATEBASE_PASSWORD: "cassandra"

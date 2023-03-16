@@ -13,7 +13,7 @@ import (
 	"account-producer-service/internal/pkg/services"
 	"account-producer-service/internal/pkg/utils"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {

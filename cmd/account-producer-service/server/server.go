@@ -1,12 +1,13 @@
 package server
 
 import (
+	"account-producer-service/cmd/middleware"
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/utils"
 	"context"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo-contrib/prometheus"
+	"github.com/labstack/echo/v4"
 )
 
 type server struct {
@@ -14,17 +15,19 @@ type server struct {
 }
 
 func NewServer() *server {
+	m := middleware.NewMetrics()
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
-	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(middleware.Recover())
-	e.Use(middleware.Gzip())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAuthorization, echo.HeaderAccept},
-		AllowMethods: []string{echo.GET, echo.POST, echo.PATCH, echo.PUT},
-	}))
+	p := prometheus.NewPrometheus("echo", nil, m.MetricList())
+	p.Use(e)
+	e.Use(m.AddCustomMetricsMiddleware)
+	//e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+	//Skipper: func(c echo.Context) bool {
+	//requestUri := c.Request().RequestURI
+	//return requestUri == "/metrics"
+	//},
+	//}))
 
 	return &server{
 		Server: e,
