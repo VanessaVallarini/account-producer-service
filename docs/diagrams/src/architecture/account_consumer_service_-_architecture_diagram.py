@@ -22,8 +22,8 @@ with Diagram("account producer service", show = False, direction="TB"):
         producerPod=Pod("account-producer-pod")
 
     with Cluster("external"):
-       producerCreateKafka=Kafka("account-create")
-       producerUpdateKafka=Kafka("account-update") 
+       producerCreateKafka=Kafka("account_createorupdate")
+       producerUpdateKafka=Kafka("account_delete") 
        producerViaCepApi=Service("via-cep-api")
 
     with Cluster("internal"):
