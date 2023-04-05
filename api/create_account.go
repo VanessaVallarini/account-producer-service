@@ -14,7 +14,10 @@ import (
 func (api *AccountApi) createAccount(echoContext echo.Context) error {
 	ctx := echoContext.Request().Context()
 
-	metrics := echoContext.Get(middleware.CKeyMetrics).(*middleware.Metrics)
+	metrics, ok := echoContext.Get(middleware.CKeyMetrics).(*middleware.Metrics)
+	if !ok {
+		utils.Logger.Error("account producer createaccount middleware is nil")
+	}
 
 	validate := validator.New()
 
@@ -22,23 +25,23 @@ func (api *AccountApi) createAccount(echoContext echo.Context) error {
 
 	err := echoContext.Bind(&createAccountRequest)
 	if err != nil {
-		utils.Logger.Errorf("error on binding info: %v", err)
+		utils.Logger.Error("account producer createaccount error on binding: %v", err)
 		errorxErr := errorx.IllegalArgument.New(err.Error())
-		return utils.BuildErrorResponse(echoContext, errorxErr)
+		return utils.BuildErrorResponse(echoContext, errorxErr, "createAccount", metrics)
 	}
 
 	err = validate.Struct(&createAccountRequest)
 	if err != nil {
+		utils.Logger.Error("account producer createaccount error on validate struct: %v", err)
 		errorxErr := errorx.IllegalArgument.New(err.Error())
-		return utils.BuildErrorResponse(echoContext, errorxErr)
+		return utils.BuildErrorResponse(echoContext, errorxErr, "createAccount", metrics)
 	}
 
 	err = api.service.CreateOrUpdateAccount(ctx, createAccountRequest)
 	if err != nil {
 		errorxErr := errorx.RejectedOperation.New(err.Error())
-		return utils.BuildErrorResponse(echoContext, errorxErr)
+		return utils.BuildErrorResponse(echoContext, errorxErr, "createAccount", metrics)
 	}
 
-	metrics.IncCustomCnt("any", "value")
 	return echoContext.NoContent(http.StatusCreated)
 }

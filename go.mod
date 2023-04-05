@@ -7,7 +7,6 @@ require (
 	github.com/VanessaVallarini/account-toolkit v0.0.0-20230107133113-2ec2e2ed30bd
 	github.com/hamba/avro v1.8.0
 	github.com/joomcode/errorx v1.1.0
-	github.com/labstack/echo v3.3.10+incompatible
 	github.com/riferrei/srclient v0.5.4
 	github.com/sony/gobreaker v0.5.0
 	github.com/spf13/cast v1.5.0
@@ -20,13 +19,12 @@ require (
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
-	github.com/labstack/echo/v4 v4.10.2 // indirect
+	github.com/labstack/echo/v4 v4.10.2
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

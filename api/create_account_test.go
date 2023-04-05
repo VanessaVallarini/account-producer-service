@@ -32,11 +32,12 @@ var (
 
 func TestCreateAccountReturnError(t *testing.T) {
 	t.Run("Expect to return 422 when email is missing", func(t *testing.T) {
+		e := echo.New()
+
 		mockAccountService := mocks.NewIAccountService(t)
 		mockApi := &AccountApi{
 			service: mockAccountService,
 		}
-		e := echo.New()
 
 		req := httptest.NewRequest(http.MethodPost, "/accounts", strings.NewReader(malformedCreateAccountJSON))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)

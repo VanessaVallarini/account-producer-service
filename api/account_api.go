@@ -17,7 +17,6 @@ func NewAccountApi(service services.IAccountService) *AccountApi {
 }
 
 func (c *AccountApi) Register(router *echo.Echo) {
-	//router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	v1 := router.Group("/v1")
 	v1.POST("/accounts", c.createAccount)
 	v1.DELETE("/accounts/:email", c.deleteAccount)
