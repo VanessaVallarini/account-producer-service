@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"time"
-
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	prom "github.com/prometheus/client_golang/prometheus"
@@ -14,16 +12,14 @@ const CKeyMetrics = "custom_metrics"
 // In case you add a metric here later, make sure to include it in the
 // MetricsList method or you'll going to have a bad time.
 type Metrics struct {
-	customCnt *prometheus.Metric
-	customDur *prometheus.Metric
+	errorResponse *prometheus.Metric
 }
 
 // Needed by echo-contrib so echo can register and collect these metrics
 func (m *Metrics) MetricList() []*prometheus.Metric {
 	return []*prometheus.Metric{
 		// ADD EVERY METRIC HERE!
-		m.customCnt,
-		m.customDur,
+		m.errorResponse,
 	}
 }
 
@@ -31,18 +27,11 @@ func (m *Metrics) MetricList() []*prometheus.Metric {
 // This is where all the prometheus metrics, names and labels are specified
 func NewMetrics() *Metrics {
 	return &Metrics{
-		customCnt: &prometheus.Metric{
-			Name:        "custom_total",
-			Description: "Custom counter events.",
+		errorResponse: &prometheus.Metric{
+			Name:        "error_response",
+			Description: "Custom error response",
 			Type:        "counter_vec",
-			Args:        []string{"label_one", "label_two"},
-		},
-		customDur: &prometheus.Metric{
-			Name:        "custom_duration_seconds",
-			Description: "Custom duration observations.",
-			Type:        "histogram_vec",
-			Args:        []string{"label_one", "label_two"},
-			Buckets:     prom.DefBuckets, // or your Buckets
+			Args:        []string{"status", "method", "path"},
 		},
 	}
 }
@@ -55,12 +44,7 @@ func (m *Metrics) AddCustomMetricsMiddleware(next echo.HandlerFunc) echo.Handler
 	}
 }
 
-func (m *Metrics) IncCustomCnt(labelOne, labelTwo string) {
-	labels := prom.Labels{"label_one": labelOne, "label_two": labelTwo}
-	m.customCnt.MetricCollector.(*prom.CounterVec).With(labels).Inc()
-}
-
-func (m *Metrics) ObserveCustomDur(labelOne, labelTwo string, d time.Duration) {
-	labels := prom.Labels{"label_one": labelOne, "label_two": labelTwo}
-	m.customDur.MetricCollector.(*prom.HistogramVec).With(labels).Observe(d.Seconds())
+func (m *Metrics) IncErrorResponse(status, method, path string) {
+	labels := prom.Labels{"status": status, "method": method, "path": path}
+	m.errorResponse.MetricCollector.(*prom.CounterVec).With(labels).Inc()
 }

@@ -31,9 +31,7 @@ Service responsible for:
 
 ## Running
 - `Docker`
-    - Run the following command: docker-compose -f local-dev/docker-compose.yaml --profile infra up -d
-- `Create subject kafka`
-    - Run the Subjects Create folder from the Postman file available in the directory account-producer-service/resources
+    - Run the following command: make compose-infra-up
 - `Config DB`
     - In DBeaver create a new connection with the following settings:
       - JDBC url: jdbc:cassandra://localhost:9042;AuthMech=1;UID=cassandra;PWD=cassandra
@@ -43,16 +41,16 @@ Service responsible for:
       - Password: cassandra
     - Execute no DBeaver e na conexão criada na etapa anterior, os comandos disponíveis em: account-consumer-service/build/package/docker/scylla/cql/V001_setup.cql
 - `Run the project`
-    - Run -> start debugging -> to allow
+    - Run the following command: make run
     - Run some of the requests available in the Postman file API available in the account-producter-service/resources directory
 - `View messages sent to Kafka`
-    - Access the control center in docker compose -> select the cluster -> select the topic -> select the messages -> insert 0 in partition -> Enter
+    - Access the kafkaui in docker compose -> select Topics -> select the topic -> select Messages
 - `Change architecture`
     - If the architecture of this project changes, run the following command in the docs/diagrams directory: make build
 
 ## Stop running
 - `Stop docker`
-    - docker-compose -f local-dev/docker-compose.yaml --profile infra down
+    - Run the following command: make compose-infra-down
 
 ## Architecture
 ![Architecture Diagram](docs/diagrams/dist/architecture/account_producer_service.png)

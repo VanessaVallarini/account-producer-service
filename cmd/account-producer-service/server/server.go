@@ -10,11 +10,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type server struct {
+type Server struct {
 	Server *echo.Echo
 }
 
-func NewServer() *server {
+func NewServer() *Server {
 	m := middleware.NewMetrics()
 	e := echo.New()
 	e.HideBanner = true
@@ -22,19 +22,13 @@ func NewServer() *server {
 	p := prometheus.NewPrometheus("echo", nil, m.MetricList())
 	p.Use(e)
 	e.Use(m.AddCustomMetricsMiddleware)
-	//e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-	//Skipper: func(c echo.Context) bool {
-	//requestUri := c.Request().RequestURI
-	//return requestUri == "/metrics"
-	//},
-	//}))
 
-	return &server{
+	return &Server{
 		Server: e,
 	}
 }
 
-func (s *server) Start(c *models.Config) {
+func (s *Server) Start(c *models.Config) {
 	utils.Logger.Info("starting server in port " + c.ServerHost)
 	err := s.Server.Start(c.ServerHost)
 

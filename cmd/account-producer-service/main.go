@@ -12,8 +12,6 @@ import (
 	"account-producer-service/internal/pkg/repository"
 	"account-producer-service/internal/pkg/services"
 	"account-producer-service/internal/pkg/utils"
-
-	"github.com/labstack/echo/v4"
 )
 
 func main() {
@@ -28,37 +26,28 @@ func main() {
 	}
 	defer scylla.Close()
 
-	kafkaClient, err := kafka.NewKafkaClient(config.Kafka)
+	kafkaProducer, err := kafka.NewProducer(config.Kafka)
 	if err != nil {
 		panic(err)
 	}
 
-	kafkaProducer, err := kafkaClient.NewProducer()
-	if err != nil {
-		panic(err)
-	}
+	server := server.NewServer()
 
 	viaCepApiClient := clients.NewViaCepApiClient(config.ViaCep)
-
 	accountRepository := repository.NewAccountRepository(scylla)
 	accountService := services.NewAccountService(kafkaProducer, viaCepApiClient, accountRepository)
+	accountApi := api.NewAccountApi(accountService)
+	accountApi.Register(server.Server)
 
-	go func() {
-		setupHttpServer(accountService, config)
-	}()
+	setupHttpServer(server, config)
 
 	utils.Logger.Info("start application")
 
 	health.NewHealthServer()
 }
 
-func setupHttpServer(asp services.IAccountService, config *models.Config) *echo.Echo {
-
-	accountApi := api.NewAccountApi(asp)
-	s := server.NewServer()
-	accountApi.Register(s.Server)
-
-	s.Start(config)
-
-	return s.Server
+func setupHttpServer(server *server.Server, config *models.Config) {
+	go func() {
+		server.Start(config)
+	}()
 }

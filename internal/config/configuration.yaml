@@ -1,6 +1,6 @@
 APP_NAME: "account-producer-service"
-SERVER_HOST: "0.0.0.0:8080"
-HEALTH_SERVER_HOST: "0.0.0.0:8081"
+SERVER_HOST: "0.0.0.0:1002"
+HEALTH_SERVER_HOST: "0.0.0.0:1003"
 
 DATABASE_USER: "cassandra"
 DATEBASE_PASSWORD: "cassandra"
@@ -19,8 +19,7 @@ KAFKA_USE_AUTHENTICATION: "false"
 KAFKA_SASL_MECHANISM: "SCRAM-SHA-512"
 KAFKA_ENABLE_TLS: "true"
 KAFKA_SCHEMA_REGISTRY_HOST: "http://localhost:8086"
-KAFKA_CREATE_OR_UPDATE_TOPIC_NAME: "account_createorupdate"
-KAFKA_DELETE_TOPIC_NAME: "account_delete"
+KAFKA_PRODUCER_TOPIC_NAME: account_createorupdate account_delete
 
 VIA_CEP_URL: "https://viacep.com.br/ws/"
 VIA_CEP_MAX_RETRIES_HTTP_REQUEST: 3

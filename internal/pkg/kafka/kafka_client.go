@@ -9,77 +9,71 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+const (
+	_saramaTimeoutMs      = 10000
+	_saramaTimeoutFlushMs = 500
+)
+
 type KafkaClient struct {
-	SchemaRegistry *SchemaRegistry
-	Client         sarama.Client
-	GroupClient    sarama.ConsumerGroup
+	client         sarama.Client
+	schemaRegistry *SchemaRegistry
+	config         *sarama.Config
 }
 
 func NewKafkaClient(cfg *models.KafkaConfig) (*KafkaClient, error) {
-	kafkaConfig, err := generateSaramaConfig(cfg)
+	saramaConfig, err := generateSaramaConfig(cfg)
 	if err != nil {
-		utils.Logger.Fatal("failed to generate Sarama Config", err)
+		utils.Logger.Error("kafka client failed to generate sarama config: %v", err)
 		return nil, err
 	}
 
-	sr, err := NewSchemaRegistry(cfg.SchemaRegistryHost, cfg.SchemaRegistryUser, cfg.SchemaRegistryPassword)
+	saramaClient, err := sarama.NewClient(cfg.Hosts, saramaConfig)
 	if err != nil {
-		utils.Logger.Fatal("failed to New Schema Registry", err)
+		utils.Logger.Error("kafka client failed to new kafka client: %v", err)
 		return nil, err
 	}
 
-	kafkaClient, err := sarama.NewClient(cfg.Hosts, kafkaConfig)
+	saramaAdmin, err := sarama.NewClusterAdminFromClient(saramaClient)
 	if err != nil {
-		utils.Logger.Fatal("failed to New kafka Client", err)
+		utils.Logger.Error("kafka client failed to new cluster admin from client: %v", err)
 		return nil, err
 	}
 
-	groupClient, err := sarama.NewConsumerGroupFromClient(cfg.ConsumerGroup, kafkaClient)
+	createTopic(cfg.ProducerTopic, saramaAdmin)
+
+	saramaSchemaRegistry, err := NewSchemaRegistry(cfg.SchemaRegistryHost, cfg.SchemaRegistryUser, cfg.SchemaRegistryPassword)
 	if err != nil {
-		utils.Logger.Fatal("failed to New Consumer Group From Client", err)
+		utils.Logger.Error("kafka client failed to new schema registry: %v", err)
 		return nil, err
 	}
 
-	return &KafkaClient{sr, kafkaClient, groupClient}, nil
+	return &KafkaClient{saramaClient, saramaSchemaRegistry, saramaConfig}, nil
 }
 
 func generateSaramaConfig(cfg *models.KafkaConfig) (*sarama.Config, error) {
-	/**
-	 * Construct a new Sarama configuration.
-	 * The Kafka cluster version has to be defined before the consumer/producer is initialized.
-	 */
-	kafkaConfig := sarama.NewConfig()
-	kafkaConfig.ClientID = cfg.ClientId
-	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
-	kafkaConfig.Producer.Retry.Max = 5
-	kafkaConfig.Producer.Return.Successes = cfg.EnableEvents
-	kafkaConfig.Producer.Return.Errors = cfg.EnableEvents
-	kafkaConfig.Consumer.Offsets.Initial = sarama.OffsetOldest
-	kafkaConfig.Consumer.Offsets.AutoCommit.Enable = false
+	defaultSaramaConfig := sarama.NewConfig()
+	saramaDefaultTimeout := time.Duration(_saramaTimeoutMs) * time.Millisecond
 
-	kafkaConfig.Net.ReadTimeout = 60 * time.Second
-	kafkaConfig.Net.WriteTimeout = 60 * time.Second
-	kafkaConfig.Net.DialTimeout = 60 * time.Second
-	kafkaConfig.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategySticky
-	kafkaConfig.Consumer.Return.Errors = true
-	kafkaConfig.Consumer.Group.Session.Timeout = 30 * time.Second
-	kafkaConfig.Consumer.Group.Rebalance.Timeout = 20 * time.Second
-	kafkaConfig.Consumer.MaxProcessingTime = 30 * time.Second
-	kafkaConfig.Consumer.Group.Heartbeat.Interval = 8 * time.Second
-
-	kafkaConfig.Version = sarama.V3_1_0_0
+	defaultSaramaConfig.ClientID = cfg.ClientId
+	defaultSaramaConfig.Version = sarama.V2_1_0_0
+	defaultSaramaConfig.Net.DialTimeout = saramaDefaultTimeout
+	defaultSaramaConfig.Net.ReadTimeout = saramaDefaultTimeout
+	defaultSaramaConfig.Net.WriteTimeout = saramaDefaultTimeout
+	defaultSaramaConfig.Metadata.Timeout = saramaDefaultTimeout
+	defaultSaramaConfig.Producer.RequiredAcks = sarama.WaitForLocal
+	defaultSaramaConfig.Producer.Flush.Frequency = _saramaTimeoutFlushMs * time.Millisecond
 
 	if cfg.UseAuthentication {
-		kafkaConfig.Net.SASL.Mechanism = sarama.SASLMechanism(cfg.SaslMechanism)
-		kafkaConfig.Net.SASL.User = cfg.User
-		kafkaConfig.Net.SASL.Password = cfg.Password
-		kafkaConfig.Net.TLS.Enable = cfg.EnableTLS
-		kafkaConfig.Net.SASL.Enable = cfg.UseAuthentication
-		if err := setAuthentication(kafkaConfig); err != nil {
+		defaultSaramaConfig.Net.SASL.Mechanism = sarama.SASLMechanism(cfg.SaslMechanism)
+		defaultSaramaConfig.Net.SASL.User = cfg.User
+		defaultSaramaConfig.Net.SASL.Password = cfg.Password
+		defaultSaramaConfig.Net.TLS.Enable = cfg.EnableTLS
+		defaultSaramaConfig.Net.SASL.Enable = cfg.UseAuthentication
+		if err := setAuthentication(defaultSaramaConfig); err != nil {
 			return nil, err
 		}
 	}
-	return kafkaConfig, nil
+	return defaultSaramaConfig, nil
 }
 
 func setAuthentication(conf *sarama.Config) error {
@@ -92,7 +86,22 @@ func setAuthentication(conf *sarama.Config) error {
 		conf.Net.SASL.SCRAMClientGeneratorFunc = scram256Fn
 	case sarama.SASLTypePlaintext:
 	default:
-		return errors.New("invalid sasl mechanism")
+		return errors.New("kafka client invalid sasl mechanism")
+	}
+	return nil
+}
+
+func createTopic(producerTopic []string, saramaAdmin sarama.ClusterAdmin) error {
+	for _, topic := range producerTopic {
+		err := saramaAdmin.CreateTopic(topic,
+			&sarama.TopicDetail{
+				NumPartitions:     4,
+				ReplicationFactor: 1,
+			},
+			false)
+		if err != nil {
+			utils.Logger.Error("kafka client create topic %v: %v", topic, err)
+		}
 	}
 	return nil
 }

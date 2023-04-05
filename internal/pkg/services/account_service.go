@@ -47,7 +47,7 @@ func (service *AccountService) CreateOrUpdateAccount(ctx context.Context, reques
 
 	viaCepResponse, err := service.viaCep.CallViaCepApi(ctx, viaCepRequest)
 	if err != nil {
-		utils.Logger.Errorf("error during call via cep api", err)
+		utils.Logger.Error("account producer failed during call via cep api: %v", err)
 		return err
 	}
 
@@ -65,7 +65,7 @@ func (service *AccountService) CreateOrUpdateAccount(ctx context.Context, reques
 
 	err = service.producer.Send(aCreate, topic_account_createorupdate, avros.AccountCreateOrUpdateSubject)
 	if err != nil {
-		utils.Logger.Errorf("error during send msg", err)
+		utils.Logger.Error("account producer createorupdateaccount failed during send msg: %v", err)
 		return err
 	}
 
@@ -79,7 +79,7 @@ func (service *AccountService) Delete(ctx context.Context, request models.Accoun
 
 	err := service.producer.Send(aDelete, topic_account_delete, avros.AccountDeleteSubject)
 	if err != nil {
-		utils.Logger.Errorf("error during send msg", err)
+		utils.Logger.Error("account producer delete failed during send msg: %v", err)
 		return err
 	}
 
@@ -92,7 +92,7 @@ func (service *AccountService) GetByEmail(ctx context.Context, request models.Ac
 		if strings.Contains(err.Error(), "not found") {
 			return nil, nil
 		}
-		utils.Logger.Errorf("error during get account by email", err)
+		utils.Logger.Error("account producer failed during get account by email: %v", err)
 		return nil, err
 	}
 
@@ -103,7 +103,7 @@ func (service *AccountService) GetAll(ctx context.Context) ([]models.Account, er
 
 	accounts, err := service.repository.List(ctx)
 	if err != nil {
-		utils.Logger.Errorf("error during get account all acounts", err)
+		utils.Logger.Error("account producer failed during get all acounts: %v", err)
 		return nil, err
 	}
 

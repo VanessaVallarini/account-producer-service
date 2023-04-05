@@ -47,6 +47,7 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/gocql/gocql v1.3.1
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/uuid v1.3.0
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect

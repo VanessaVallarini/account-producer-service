@@ -40,6 +40,7 @@ type KafkaConfig struct {
 	RetryMax               int
 	ConsumerTopic          []string
 	ConsumerGroup          string
+	ProducerTopic          []string
 }
 
 type ViaCepConfig struct {

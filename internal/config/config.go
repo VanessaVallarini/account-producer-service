@@ -11,7 +11,7 @@ import (
 func NewConfig() (*models.Config, error) {
 	viperConfig, err := initConfig()
 	if err != nil {
-		utils.Logger.Error("error failed to read config file", err)
+		utils.Logger.Error("failed to read config file: %v", err)
 		return nil, err
 	}
 
@@ -69,6 +69,7 @@ func buildKafkaClientConfig(config *viper.Viper) *models.KafkaConfig {
 		Password:               config.GetString("KAFKA_PASSWORD"),
 		SchemaRegistryUser:     config.GetString("KAFKA_SCHEMA_REGISTRYR"),
 		SchemaRegistryPassword: config.GetString("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
+		ProducerTopic:          cast.ToStringSlice(config.GetString("KAFKA_PRODUCER_TOPIC_NAME")),
 	}
 }
 

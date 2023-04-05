@@ -42,7 +42,7 @@ func (v *ViaCepApiClient) CallViaCepApi(ctx context.Context, ae models.ViaCepReq
 		url := v.url + ae.Cep + endUrl
 		resp, err := http.Get(url)
 		if err != nil {
-			utils.Logger.Warn("error during call via cep api")
+			utils.Logger.Error("via cep api failed during call api: %v", err)
 			return nil, err
 		}
 
@@ -60,7 +60,7 @@ func (v *ViaCepApiClient) CallViaCepApi(ctx context.Context, ae models.ViaCepReq
 
 	var viaCepResponse models.ViaCepResponse
 	if err := json.Unmarshal(body.([]byte), &viaCepResponse); err != nil {
-		utils.Logger.Warn("error during unmarshal return via cep api")
+		utils.Logger.Error("via cep api failed during unmarshal return api: %v", err)
 		return nil, err
 	}
 

@@ -14,55 +14,39 @@ const (
 )
 
 func TestKafkaProducer(t *testing.T) {
-	configKafka := models.KafkaConfig{
+	configKafka := &models.KafkaConfig{
 		ClientId:               "account-producer-service",
 		Hosts:                  []string{"localhost:9092"},
-		SchemaRegistryHost:     "http://localhost:8081",
-		Acks:                   "all",
-		Timeout:                10,
 		UseAuthentication:      false,
-		EnableTLS:              true,
 		SaslMechanism:          "SCRAM-SHA-512",
-		User:                   "kafka",
-		Password:               "kafka",
+		EnableTLS:              true,
+		SchemaRegistryHost:     "http://localhost:8086",
+		User:                   "",
+		Password:               "",
 		SchemaRegistryUser:     "",
 		SchemaRegistryPassword: "",
-		EnableEvents:           true,
-		MaxMessageBytes:        0,
-		RetryMax:               0,
-		ConsumerTopic:          []string{"account_createorupdate account_delete"},
-		ConsumerGroup:          "account-service",
 	}
 
-	kafkaClient, _ := NewKafkaClient(&configKafka)
-	producer, _ := kafkaClient.NewProducer()
+	producer, _ := NewProducer(configKafka)
 
 	assert.NotNil(t, producer)
 }
 
 func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 	t.Run("Expect to return error during send msg to create account and msg is missing", func(t *testing.T) {
-		configKafka := models.KafkaConfig{
+		configKafka := &models.KafkaConfig{
 			ClientId:               "account-producer-service",
 			Hosts:                  []string{"localhost:9092"},
-			SchemaRegistryHost:     "http://localhost:8081",
-			Acks:                   "all",
-			Timeout:                10,
 			UseAuthentication:      false,
-			EnableTLS:              true,
 			SaslMechanism:          "SCRAM-SHA-512",
-			User:                   "kafka",
-			Password:               "kafka",
+			EnableTLS:              true,
+			SchemaRegistryHost:     "http://localhost:8086",
+			User:                   "",
+			Password:               "",
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
-			EnableEvents:           true,
-			MaxMessageBytes:        0,
-			RetryMax:               0,
-			ConsumerTopic:          []string{"account_createorupdate account_delete"},
-			ConsumerGroup:          "account-service",
 		}
-		kafkaClient, _ := NewKafkaClient(&configKafka)
-		producer, _ := kafkaClient.NewProducer()
+		producer, _ := NewProducer(configKafka)
 
 		account := models.Account{
 			Email:       "lorem1@email.com",
@@ -83,27 +67,19 @@ func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 	})
 
 	t.Run("Expect to return error during send msg in DLQ to delete account", func(t *testing.T) {
-		configKafka := models.KafkaConfig{
-			ClientId:               "account-consumer-service",
+		configKafka := &models.KafkaConfig{
+			ClientId:               "account-producer-service",
 			Hosts:                  []string{"localhost:9092"},
-			SchemaRegistryHost:     "http://localhost:8081",
-			Acks:                   "all",
-			Timeout:                10,
 			UseAuthentication:      false,
-			EnableTLS:              true,
 			SaslMechanism:          "SCRAM-SHA-512",
-			User:                   "kafka",
-			Password:               "kafka",
+			EnableTLS:              true,
+			SchemaRegistryHost:     "http://localhost:8086",
+			User:                   "",
+			Password:               "",
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
-			EnableEvents:           true,
-			MaxMessageBytes:        0,
-			RetryMax:               0,
-			ConsumerTopic:          []string{"account_createorupdate account_delete"},
-			ConsumerGroup:          "account-service",
 		}
-		kafkaClient, _ := NewKafkaClient(&configKafka)
-		producer, _ := kafkaClient.NewProducer()
+		producer, _ := NewProducer(configKafka)
 
 		request := models.AccountRequestByEmail{
 			Email: "lorem1@email.com",
@@ -117,27 +93,19 @@ func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 
 func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
 	t.Run("Expect to return success during send msg to create account", func(t *testing.T) {
-		configKafka := models.KafkaConfig{
+		configKafka := &models.KafkaConfig{
 			ClientId:               "account-producer-service",
 			Hosts:                  []string{"localhost:9092"},
-			SchemaRegistryHost:     "http://localhost:8081",
-			Acks:                   "all",
-			Timeout:                10,
 			UseAuthentication:      false,
-			EnableTLS:              true,
 			SaslMechanism:          "SCRAM-SHA-512",
-			User:                   "kafka",
-			Password:               "kafka",
+			EnableTLS:              true,
+			SchemaRegistryHost:     "http://localhost:8086",
+			User:                   "",
+			Password:               "",
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
-			EnableEvents:           true,
-			MaxMessageBytes:        0,
-			RetryMax:               0,
-			ConsumerTopic:          []string{"account_createorupdate account_delete"},
-			ConsumerGroup:          "account-service",
 		}
-		kafkaClient, _ := NewKafkaClient(&configKafka)
-		producer, _ := kafkaClient.NewProducer()
+		producer, _ := NewProducer(configKafka)
 
 		account := avros.AccountCreateOrUpdateEvent{
 			Email:       "lorem1@email.com",
@@ -157,27 +125,19 @@ func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
 	})
 
 	t.Run("Expect to return success during send msg in DLQ to delete account", func(t *testing.T) {
-		configKafka := models.KafkaConfig{
-			ClientId:               "account-consumer-service",
+		configKafka := &models.KafkaConfig{
+			ClientId:               "account-producer-service",
 			Hosts:                  []string{"localhost:9092"},
-			SchemaRegistryHost:     "http://localhost:8081",
-			Acks:                   "all",
-			Timeout:                10,
 			UseAuthentication:      false,
-			EnableTLS:              true,
 			SaslMechanism:          "SCRAM-SHA-512",
-			User:                   "kafka",
-			Password:               "kafka",
+			EnableTLS:              true,
+			SchemaRegistryHost:     "http://localhost:8086",
+			User:                   "",
+			Password:               "",
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
-			EnableEvents:           true,
-			MaxMessageBytes:        0,
-			RetryMax:               0,
-			ConsumerTopic:          []string{"account_createorupdate account_delete"},
-			ConsumerGroup:          "account-service",
 		}
-		kafkaClient, _ := NewKafkaClient(&configKafka)
-		producer, _ := kafkaClient.NewProducer()
+		producer, _ := NewProducer(configKafka)
 
 		request := avros.AccountDeleteEvent{
 			Email: "lorem1@email.com",

@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"account-producer-service/cmd/middleware"
 	"net/http"
+	"strconv"
 
 	"github.com/joomcode/errorx"
 	"github.com/labstack/echo/v4"
@@ -36,7 +38,13 @@ func handleErrorResponse(errx *errorx.Error) *Error {
 	return errorResp
 }
 
-func BuildErrorResponse(context echo.Context, errx *errorx.Error) error {
+func BuildErrorResponse(context echo.Context, errx *errorx.Error, method string, metrics *middleware.Metrics) error {
 	errorResponse := handleErrorResponse(errx)
+	statusCodeStr := strconv.Itoa(errorResponse.StatusCode)
+	path := context.Path()
+	if metrics != nil {
+		metrics.IncErrorResponse(statusCodeStr, method, path)
+	}
+
 	return context.JSON(errorResponse.StatusCode, errorResponse)
 }

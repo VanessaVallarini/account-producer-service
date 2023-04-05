@@ -1,9 +1,9 @@
 package kafka
 
 import (
+	"account-producer-service/internal/pkg/utils"
 	"encoding/binary"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/hamba/avro"
@@ -16,21 +16,27 @@ type SchemaRegistry struct {
 
 func NewSchemaRegistry(host, user, password string) (*SchemaRegistry, error) {
 	src := srclient.CreateSchemaRegistryClient(host)
-	if src == nil {
-		return nil, errors.New("error creating shecma registry")
-	}
 	src.SetCredentials(user, password)
+
 	return &SchemaRegistry{src}, nil
 }
 
 // ValidateSchema checks for the existence and compatibility of a schema.
 // if the subject does not exist it will be created, if it is incompatible it will return an error.
 func (sr *SchemaRegistry) ValidateSchema(rawSchema, subject string, schemaType string) error {
-	_, err := sr.GetLatestSchema(subject)
+	schema, err := sr.GetLatestSchema(subject)
 
 	if err != nil && !strings.Contains(err.Error(), "404") {
-		fmt.Println(err)
+		utils.Logger.Error("kafka schema registry: %v", err)
 		return err
+	}
+
+	if schema == nil {
+		_, err := sr.CreateSchema(subject, rawSchema, srclient.SchemaType(schemaType))
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 
 	isCompatible, err := sr.IsSchemaCompatible(subject, rawSchema, "latest", srclient.SchemaType(schemaType))
@@ -38,10 +44,9 @@ func (sr *SchemaRegistry) ValidateSchema(rawSchema, subject string, schemaType s
 		return err
 	}
 
-	/* _, err = sr.CreateSchema(subject, rawSchema, srclient.SchemaType(schemaType))
-	if err != nil {
-		return err
-	} */
+	if !isCompatible {
+		return errors.New("schema registry invalid schema is not compatible")
+	}
 
 	return nil
 }
@@ -53,7 +58,7 @@ func (sr *SchemaRegistry) GetSchema(subject string) (*srclient.Schema, error) {
 	}
 
 	if schema == nil {
-		return nil, errors.New("unexpected behavior retrieving schema, got 'nil' from registry")
+		return nil, errors.New("schema registry unexpected behavior retrieving schema, got 'nil' from registry")
 	}
 
 	return schema, nil

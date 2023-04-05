@@ -40,7 +40,7 @@ func (repo *AccountRepository) GetByEmail(ctx context.Context, a models.AccountR
 	}
 	err := repo.scylla.ScanMap(ctx, stmt, results, a.Email)
 	if err != nil {
-		utils.Logger.Errorf("error during query get account by email", err)
+		utils.Logger.Error("account producer failed during query get account by email: %v", err)
 		return nil, err
 	}
 
@@ -52,7 +52,7 @@ func (repo *AccountRepository) List(ctx context.Context) ([]models.Account, erro
 
 	uList, err := repo.scylla.ScanMapSlice(ctx, stmt)
 	if err != nil {
-		utils.Logger.Errorf("error during query get all accounts", err)
+		utils.Logger.Error("account producer failed during query get all accounts: %v", err)
 		return nil, err
 	}
 
