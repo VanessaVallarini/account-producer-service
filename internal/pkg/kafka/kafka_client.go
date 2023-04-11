@@ -46,7 +46,8 @@ func NewKafkaClient(cfg *models.KafkaConfig) (*KafkaClient, error) {
 
 	saramaSchemaRegistry, err := NewSchemaRegistry(cfg.SchemaRegistryHost, cfg.SchemaRegistryUser, cfg.SchemaRegistryPassword)
 	if err != nil {
-		panic(err)
+		utils.Logger.Error("kafka client failed to new schema registry: %v", err)
+		return nil, err
 	}
 
 	return &KafkaClient{

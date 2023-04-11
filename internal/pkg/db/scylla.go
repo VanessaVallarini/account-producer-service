@@ -30,7 +30,7 @@ func NewScylla(c *models.DatabaseConfig) (*Scylla, error) {
 
 	session, err := cluster.CreateSession()
 	if err != nil {
-		utils.Logger.Fatal("failed to create session", err)
+		utils.Logger.Error("failed to create session: %v", err)
 		return nil, err
 	}
 
