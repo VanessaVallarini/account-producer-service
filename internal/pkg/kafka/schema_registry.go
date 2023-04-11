@@ -16,7 +16,9 @@ type SchemaRegistry struct {
 
 func NewSchemaRegistry(host, user, password string) (*SchemaRegistry, error) {
 	src := srclient.CreateSchemaRegistryClient(host)
-	src.SetCredentials(user, password)
+	if user != "" || password != "" {
+		src.SetCredentials(user, password)
+	}
 
 	return &SchemaRegistry{src}, nil
 }

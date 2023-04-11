@@ -15,9 +15,10 @@ const (
 )
 
 type KafkaClient struct {
-	client         sarama.Client
-	schemaRegistry *SchemaRegistry
-	config         *sarama.Config
+	saramaConfig         *sarama.Config
+	saramaClient         sarama.Client
+	saramaClusterAdmin   sarama.ClusterAdmin
+	saramaSchemaRegistry *SchemaRegistry
 }
 
 func NewKafkaClient(cfg *models.KafkaConfig) (*KafkaClient, error) {
@@ -33,21 +34,27 @@ func NewKafkaClient(cfg *models.KafkaConfig) (*KafkaClient, error) {
 		return nil, err
 	}
 
-	saramaAdmin, err := sarama.NewClusterAdminFromClient(saramaClient)
+	saramaClusterAdmin, err := sarama.NewClusterAdminFromClient(saramaClient)
 	if err != nil {
 		utils.Logger.Error("kafka client failed to new cluster admin from client: %v", err)
 		return nil, err
 	}
 
-	createTopic(cfg.ProducerTopic, saramaAdmin)
+	if err := createTopic(cfg.ProducerTopic, saramaClusterAdmin); err != nil {
+		utils.Logger.Error("kafka client create producer topic %v: %v", cfg.ProducerTopic, err)
+	}
 
 	saramaSchemaRegistry, err := NewSchemaRegistry(cfg.SchemaRegistryHost, cfg.SchemaRegistryUser, cfg.SchemaRegistryPassword)
 	if err != nil {
-		utils.Logger.Error("kafka client failed to new schema registry: %v", err)
-		return nil, err
+		panic(err)
 	}
 
-	return &KafkaClient{saramaClient, saramaSchemaRegistry, saramaConfig}, nil
+	return &KafkaClient{
+		saramaConfig:         saramaConfig,
+		saramaClient:         saramaClient,
+		saramaClusterAdmin:   saramaClusterAdmin,
+		saramaSchemaRegistry: saramaSchemaRegistry,
+	}, nil
 }
 
 func generateSaramaConfig(cfg *models.KafkaConfig) (*sarama.Config, error) {
@@ -91,9 +98,9 @@ func setAuthentication(conf *sarama.Config) error {
 	return nil
 }
 
-func createTopic(producerTopic []string, saramaAdmin sarama.ClusterAdmin) error {
-	for _, topic := range producerTopic {
-		err := saramaAdmin.CreateTopic(topic,
+func createTopic(topics []string, saramaClusterAdmin sarama.ClusterAdmin) error {
+	for _, topic := range topics {
+		err := saramaClusterAdmin.CreateTopic(topic,
 			&sarama.TopicDetail{
 				NumPartitions:     4,
 				ReplicationFactor: 1,
@@ -104,4 +111,10 @@ func createTopic(producerTopic []string, saramaAdmin sarama.ClusterAdmin) error 
 		}
 	}
 	return nil
+}
+
+// Close closes broker connections.
+func (kc *KafkaClient) Close() error {
+	kc.saramaClusterAdmin.Close()
+	return kc.saramaClient.Close()
 }

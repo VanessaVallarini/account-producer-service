@@ -26,7 +26,15 @@ func main() {
 	}
 	defer scylla.Close()
 
-	kafkaProducer, err := kafka.NewProducer(config.Kafka)
+	kafkaClient, err := kafka.NewKafkaClient(
+		config.Kafka,
+	)
+	if err != nil {
+		panic(err)
+	}
+	defer kafkaClient.Close()
+
+	kafkaProducer, err := kafkaClient.NewProducer(config.Kafka)
 	if err != nil {
 		panic(err)
 	}

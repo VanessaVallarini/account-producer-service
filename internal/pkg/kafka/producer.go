@@ -18,37 +18,33 @@ type IKafkaProducer interface {
 }
 
 type KafkaProducer struct {
-	syncProducer sarama.SyncProducer
-	schema       *SchemaRegistry
+	syncProducer   sarama.SyncProducer
+	schemaRegistry *SchemaRegistry
 }
 
-func NewProducer(cfg *models.KafkaConfig) (*KafkaProducer, error) {
-	client, err := NewKafkaClient(cfg)
-	if err != nil {
-		return nil, err
-	}
+func (kc *KafkaClient) NewProducer(cfg *models.KafkaConfig) (*KafkaProducer, error) {
 
-	client.config.Producer.Return.Successes = true
+	kc.saramaConfig.Producer.Return.Successes = true
 
-	producer, err := sarama.NewSyncProducer(cfg.Hosts, client.config)
+	producer, err := sarama.NewSyncProducer(cfg.Hosts, kc.saramaConfig)
 	if err != nil {
 		utils.Logger.Error("kafka producer failed to new sync producer: %v", err)
 		return nil, err
 	}
 
-	if err := client.schemaRegistry.ValidateSchema(avros.AccountCreateOrUpdateAvro, avros.AccountCreateOrUpdateSubject, Avro); err != nil {
+	if err := kc.saramaSchemaRegistry.ValidateSchema(avros.AccountCreateOrUpdateAvro, avros.AccountCreateOrUpdateSubject, Avro); err != nil {
 		return nil, err
 	}
 
-	if err := client.schemaRegistry.ValidateSchema(avros.AccountDeleteAvro, avros.AccountDeleteSubject, Avro); err != nil {
+	if err := kc.saramaSchemaRegistry.ValidateSchema(avros.AccountDeleteAvro, avros.AccountDeleteSubject, Avro); err != nil {
 		return nil, err
 	}
 
-	return &KafkaProducer{producer, client.schemaRegistry}, nil
+	return &KafkaProducer{producer, kc.saramaSchemaRegistry}, nil
 }
 
 func (ip *KafkaProducer) Send(msg interface{}, topic, subject string) error {
-	msgEncoder, err := ip.schema.Encode(msg, subject)
+	msgEncoder, err := ip.schemaRegistry.Encode(msg, subject)
 	if err != nil {
 		utils.Logger.Error("kafka producer failed encode msg to send: %v", err)
 		return err

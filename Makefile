@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: run
 run: build
-	@ENV_PROFILE=local ./bin/app/authorization-service
+	go run ./cmd/account-producer-service/main.go
 
 .PHONY: build run compose-up compose-down compose-infra-down compose-infra-up
 compose-infra-up:

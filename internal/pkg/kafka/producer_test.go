@@ -27,7 +27,9 @@ func TestKafkaProducer(t *testing.T) {
 		SchemaRegistryPassword: "",
 	}
 
-	producer, _ := NewProducer(configKafka)
+	kafkaClient, _ := NewKafkaClient(configKafka)
+
+	producer, _ := kafkaClient.NewProducer(configKafka)
 
 	assert.NotNil(t, producer)
 }
@@ -46,7 +48,10 @@ func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
 		}
-		producer, _ := NewProducer(configKafka)
+
+		kafkaClient, _ := NewKafkaClient(configKafka)
+
+		producer, _ := kafkaClient.NewProducer(configKafka)
 
 		account := models.Account{
 			Email:       "lorem1@email.com",
@@ -79,7 +84,10 @@ func TestKafkaProducerSendMsgReturnError(t *testing.T) {
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
 		}
-		producer, _ := NewProducer(configKafka)
+
+		kafkaClient, _ := NewKafkaClient(configKafka)
+
+		producer, _ := kafkaClient.NewProducer(configKafka)
 
 		request := models.AccountRequestByEmail{
 			Email: "lorem1@email.com",
@@ -105,7 +113,10 @@ func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
 		}
-		producer, _ := NewProducer(configKafka)
+
+		kafkaClient, _ := NewKafkaClient(configKafka)
+
+		producer, _ := kafkaClient.NewProducer(configKafka)
 
 		account := avros.AccountCreateOrUpdateEvent{
 			Email:       "lorem1@email.com",
@@ -137,7 +148,10 @@ func TestKafkaProducerSendMsgReturnSuccess(t *testing.T) {
 			SchemaRegistryUser:     "",
 			SchemaRegistryPassword: "",
 		}
-		producer, _ := NewProducer(configKafka)
+
+		kafkaClient, _ := NewKafkaClient(configKafka)
+
+		producer, _ := kafkaClient.NewProducer(configKafka)
 
 		request := avros.AccountDeleteEvent{
 			Email: "lorem1@email.com",

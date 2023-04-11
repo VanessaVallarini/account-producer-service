@@ -67,7 +67,7 @@ func buildKafkaClientConfig(config *viper.Viper) *models.KafkaConfig {
 		SchemaRegistryHost:     config.GetString("KAFKA_SCHEMA_REGISTRY_HOST"),
 		User:                   config.GetString("KAFKA_USER"),
 		Password:               config.GetString("KAFKA_PASSWORD"),
-		SchemaRegistryUser:     config.GetString("KAFKA_SCHEMA_REGISTRYR"),
+		SchemaRegistryUser:     config.GetString("KAFKA_SCHEMA_REGISTRY_USER"),
 		SchemaRegistryPassword: config.GetString("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
 		ProducerTopic:          cast.ToStringSlice(config.GetString("KAFKA_PRODUCER_TOPIC_NAME")),
 	}
