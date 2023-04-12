@@ -1,6 +1,7 @@
 package api
 
 import (
+	"account-producer-service/internal/metrics"
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/mocks"
 	"errors"
@@ -16,8 +17,10 @@ import (
 func TestGetAllAccountsReturnError(t *testing.T) {
 	t.Run("Expect to return 5xx when service returns error", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 
@@ -39,8 +42,10 @@ func TestGetAllAccountsReturnError(t *testing.T) {
 
 	t.Run("Expect to return 404 when account does not exists", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 
@@ -64,8 +69,10 @@ func TestGetAllAccountsReturnError(t *testing.T) {
 func TestGetAllAccountsReturnSuccess(t *testing.T) {
 	t.Run("Expect to return account", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 

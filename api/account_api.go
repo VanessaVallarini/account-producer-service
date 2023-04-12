@@ -1,6 +1,7 @@
 package api
 
 import (
+	"account-producer-service/internal/metrics"
 	"account-producer-service/internal/pkg/services"
 
 	"github.com/labstack/echo/v4"
@@ -8,11 +9,13 @@ import (
 
 type AccountApi struct {
 	service services.IAccountService
+	metrics *metrics.Metrics
 }
 
-func NewAccountApi(service services.IAccountService) *AccountApi {
+func NewAccountApi(service services.IAccountService, metrics *metrics.Metrics) *AccountApi {
 	return &AccountApi{
 		service: service,
+		metrics: metrics,
 	}
 }
 

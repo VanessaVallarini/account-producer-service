@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"account-producer-service/cmd/middleware"
+	"account-producer-service/internal/metrics"
 	"net/http"
 	"strconv"
 
@@ -38,13 +38,13 @@ func handleErrorResponse(errx *errorx.Error) *Error {
 	return errorResp
 }
 
-func BuildErrorResponse(context echo.Context, errx *errorx.Error, method string, metrics *middleware.Metrics) error {
+func BuildErrorResponse(context echo.Context, errx *errorx.Error, method string, metrics *metrics.Metrics) error {
 	errorResponse := handleErrorResponse(errx)
+
 	statusCodeStr := strconv.Itoa(errorResponse.StatusCode)
 	path := context.Path()
-	if metrics != nil {
-		metrics.IncErrorResponse(statusCodeStr, method, path)
-	}
+	mv := []string{statusCodeStr, method, path}
+	metrics.ApiStrategyErrosCounter.WithLabelValues(mv...).Inc()
 
 	return context.JSON(errorResponse.StatusCode, errorResponse)
 }

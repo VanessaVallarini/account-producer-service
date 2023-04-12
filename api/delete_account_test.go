@@ -1,6 +1,7 @@
 package api
 
 import (
+	"account-producer-service/internal/metrics"
 	"account-producer-service/internal/pkg/mocks"
 	"errors"
 	"net/http"
@@ -15,8 +16,10 @@ import (
 func TestDeleteAccountReturnError(t *testing.T) {
 	t.Run("Expect to return 422 when email is missing", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 
@@ -34,8 +37,10 @@ func TestDeleteAccountReturnError(t *testing.T) {
 
 	t.Run("Expect to return 5xx when service returns error", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 
@@ -62,8 +67,10 @@ func TestDeleteAccountReturnError(t *testing.T) {
 func TestDeleteAccountReturnSuccess(t *testing.T) {
 	t.Run("Expect to return 200", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 

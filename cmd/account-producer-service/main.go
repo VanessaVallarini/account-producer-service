@@ -5,6 +5,7 @@ import (
 	"account-producer-service/cmd/account-producer-service/health"
 	"account-producer-service/cmd/account-producer-service/server"
 	"account-producer-service/internal/config"
+	"account-producer-service/internal/metrics"
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/clients"
 	"account-producer-service/internal/pkg/db"
@@ -34,17 +35,19 @@ func main() {
 	}
 	defer kafkaClient.Close()
 
-	kafkaProducer, err := kafkaClient.NewProducer(config.Kafka)
+	metrics := metrics.NewMetrics()
+
+	kafkaProducer, err := kafkaClient.NewProducer(config.Kafka, metrics)
 	if err != nil {
 		panic(err)
 	}
 
-	server := server.NewServer()
+	server := server.NewServer(config.AppName)
 
 	viaCepApiClient := clients.NewViaCepApiClient(config.ViaCep)
 	accountRepository := repository.NewAccountRepository(scylla)
 	accountService := services.NewAccountService(kafkaProducer, viaCepApiClient, accountRepository)
-	accountApi := api.NewAccountApi(accountService)
+	accountApi := api.NewAccountApi(accountService, metrics)
 	accountApi.Register(server.Server)
 
 	setupHttpServer(server, config)

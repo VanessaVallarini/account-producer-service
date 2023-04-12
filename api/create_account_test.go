@@ -1,6 +1,7 @@
 package api
 
 import (
+	"account-producer-service/internal/metrics"
 	"account-producer-service/internal/pkg/mocks"
 	"errors"
 	"net/http"
@@ -35,8 +36,10 @@ func TestCreateAccountReturnError(t *testing.T) {
 		e := echo.New()
 
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 
 		req := httptest.NewRequest(http.MethodPost, "/accounts", strings.NewReader(malformedCreateAccountJSON))
@@ -51,8 +54,10 @@ func TestCreateAccountReturnError(t *testing.T) {
 
 	t.Run("Expect to return 5xx when service returns error", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 
@@ -77,8 +82,10 @@ func TestCreateAccountReturnError(t *testing.T) {
 func TestCreateAccountReturnSuccess(t *testing.T) {
 	t.Run("Expect to return 201", func(t *testing.T) {
 		mockAccountService := mocks.NewIAccountService(t)
+		metrics := metrics.NewMetrics()
 		mockApi := &AccountApi{
 			service: mockAccountService,
+			metrics: metrics,
 		}
 		e := echo.New()
 

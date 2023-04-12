@@ -1,8 +1,10 @@
 package kafka
 
 import (
+	"account-producer-service/internal/metrics"
 	"account-producer-service/internal/models"
 	"account-producer-service/internal/pkg/utils"
+	"fmt"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -20,9 +22,10 @@ type IKafkaProducer interface {
 type KafkaProducer struct {
 	syncProducer   sarama.SyncProducer
 	schemaRegistry *SchemaRegistry
+	metrics        *metrics.Metrics
 }
 
-func (kc *KafkaClient) NewProducer(cfg *models.KafkaConfig) (*KafkaProducer, error) {
+func (kc *KafkaClient) NewProducer(cfg *models.KafkaConfig, metrics *metrics.Metrics) (*KafkaProducer, error) {
 
 	kc.saramaConfig.Producer.Return.Successes = true
 
@@ -40,7 +43,7 @@ func (kc *KafkaClient) NewProducer(cfg *models.KafkaConfig) (*KafkaProducer, err
 		return nil, err
 	}
 
-	return &KafkaProducer{producer, kc.saramaSchemaRegistry}, nil
+	return &KafkaProducer{producer, kc.saramaSchemaRegistry, metrics}, nil
 }
 
 func (ip *KafkaProducer) Send(msg interface{}, topic, subject string) error {
@@ -58,7 +61,20 @@ func (ip *KafkaProducer) Send(msg interface{}, topic, subject string) error {
 		Value:     sarama.ByteEncoder(msgEncoder),
 		Timestamp: time.Now(),
 	}
-	ip.syncProducer.SendMessage(&m)
+
+	partition, offset, err := ip.syncProducer.SendMessage(&m)
+	if err != nil {
+		partitionStr := fmt.Sprint(partition)
+		offsetStr := fmt.Sprint(offset)
+		mv := []string{topic, partitionStr, offsetStr}
+		ip.metrics.KafkaStrategyProducedMessagesFailCounter.WithLabelValues(mv...).Inc()
+		return err
+	}
+
+	partitionStr := fmt.Sprint(partition)
+	offsetStr := fmt.Sprint(offset)
+	mv := []string{topic, partitionStr, offsetStr}
+	ip.metrics.KafkaStrategyProducedMessagesSuccessCounter.WithLabelValues(mv...).Inc()
 
 	return nil
 }
